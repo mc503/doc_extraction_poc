@@ -65,15 +65,27 @@ st.markdown("""
     
     
     /* Sidebar Text Inputs - Translucent with White Text */
-    section[data-testid="stSidebar"] .stTextInput>div>div>input {
+    section[data-testid="stSidebar"] .stTextInput>div>div>input,
+    section[data-testid="stSidebar"] .stTextInput input {
+        background: rgba(255, 255, 255, 0.15) !important;
         background-color: rgba(255, 255, 255, 0.15) !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 16px !important;
         backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
         color: #FFFFFF !important;
+        box-shadow: none !important;
     }
-    section[data-testid="stSidebar"] .stTextInput>div>div>input::placeholder {
+    section[data-testid="stSidebar"] .stTextInput>div>div>input::placeholder,
+    section[data-testid="stSidebar"] .stTextInput input::placeholder {
         color: rgba(255, 255, 255, 0.6) !important;
+    }
+    section[data-testid="stSidebar"] .stTextInput>div>div>input:focus,
+    section[data-testid="stSidebar"] .stTextInput input:focus {
+        background: rgba(255, 255, 255, 0.15) !important;
+        background-color: rgba(255, 255, 255, 0.15) !important;
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        box-shadow: none !important;
     }
 
     /* Selectbox - Translucent */
@@ -181,19 +193,34 @@ st.markdown("""
         color: #000000 !important;
     }
     
-    /* File Uploader - Liquid Glass */
-    section[data-testid="stFileUploader"] {
-        background-color: rgba(255, 255, 255, 0.25);
-        border-radius: 16px;
-        padding: 20px;
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+    /* File Uploader - Translucent with White Text */
+    section[data-testid="stFileUploader"],
+    section[data-testid="stFileUploadDropzone"] {
+        background: rgba(255, 255, 255, 0.15) !important;
+        background-color: rgba(255, 255, 255, 0.15) !important;
+        border-radius: 16px !important;
+        padding: 20px !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
     }
-    section[data-testid="stFileUploader"] div {
-        color: #000000 !important;
+    section[data-testid="stFileUploader"] div,
+    section[data-testid="stFileUploadDropzone"] div {
+        color: #FFFFFF !important;
     }
-    section[data-testid="stFileUploader"] small {
-        color: #000000 !important;
+    section[data-testid="stFileUploader"] small,
+    section[data-testid="stFileUploadDropzone"] small,
+    section[data-testid="stFileUploader"] span,
+    section[data-testid="stFileUploadDropzone"] span,
+    section[data-testid="stFileUploader"] p,
+    section[data-testid="stFileUploadDropzone"] p {
+        color: #FFFFFF !important;
+    }
+    section[data-testid="stFileUploader"] button,
+    section[data-testid="stFileUploadDropzone"] button {
+        background: rgba(255, 255, 255, 0.15) !important;
+        color: #FFFFFF !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
     }
 
     /* Headers */
