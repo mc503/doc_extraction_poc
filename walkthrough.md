@@ -1,6 +1,6 @@
-# Spektr Document OCR - Walkthrough (macOS Guide)
+# Spektr - Document Extraction Walkthrough (macOS Guide)
 
-Welcome to **Spektr Document OCR**! This application allows you to extract structured data from documents (PDFs and Images) using the power of AI (OpenAI GPT-4o).
+Welcome to **Spektr**! This application allows you to extract structured data from documents (PDFs and Images) using the power of AI (OpenAI GPT-4o).
 
 This guide is designed for **macOS users** setting up their machine from scratch.
 
@@ -105,7 +105,7 @@ OPENAI_API_KEY = "sk-proj-xxxxxxxxxxxxxxxxxxxxxxxx"
 
 ## 4. Running the Application
 
-Now you are ready to launch Spektr Document OCR!
+Now you are ready to launch Spektr!
 
 1.  Ensure your virtual environment is active (look for `(venv)`).
 2.  Run the command:
