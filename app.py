@@ -27,6 +27,14 @@ st.markdown("""
         background: radial-gradient(circle at 10% 20%, rgb(69, 86, 255) 0%, rgb(100, 22, 195) 90%);
         color: white;
     }
+    
+    /* Header Bar - Translucent Purple */
+    header[data-testid="stHeader"] {
+        background: linear-gradient(90deg, rgba(100, 22, 195, 0.3) 0%, rgba(69, 86, 255, 0.3) 100%) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
 
     /* Sidebar Liquid Glass */
     section[data-testid="stSidebar"] {
@@ -53,6 +61,18 @@ st.markdown("""
     }
     .stTextInput>div>div>input::placeholder {
         color: rgba(0, 0, 0, 0.6);
+    }
+    
+    /* Sidebar Text Inputs - More Translucent Like Dropdowns */
+    section[data-testid="stSidebar"] .stTextInput>div>div>input {
+        background-color: rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 16px !important;
+        backdrop-filter: blur(20px) !important;
+        color: #000000 !important;
+    }
+    section[data-testid="stSidebar"] .stTextInput>div>div>input::placeholder {
+        color: rgba(0, 0, 0, 0.6) !important;
     }
 
     /* Selectbox - Fix Contrast */
