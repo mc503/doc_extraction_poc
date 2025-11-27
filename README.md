@@ -1,4 +1,4 @@
-# Spektr - AI-Powered Document Extraction
+# Spektr Document OCR
 
 Extract structured data from documents (PDFs and images) using AI.
 

@@ -8,158 +8,471 @@ from backend import DocumentProcessor, FieldDefinition, FieldType, FieldLength
 
 # Page Config
 st.set_page_config(
-    page_title="Spektr",
+    page_title="Spektr Document OCR",
     page_icon="🔮",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Spektr "Liquid Glass" CSS
+# Apple-Inspired Liquid Glass CSS
 st.markdown("""
 <style>
-    /* Global Font */
+    /* ============================================
+       TYPOGRAPHY & GLOBAL STYLES
+       ============================================ */
+    
+    @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap');
+    
     html, body, [class*="css"] {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        letter-spacing: -0.01em;
     }
 
-    /* Background Gradient - Vibrant & Deep */
+    /* ============================================
+       BACKGROUND - Deep Gradient
+       ============================================ */
+    
     .stApp {
-        background: radial-gradient(circle at 10% 20%, rgb(69, 86, 255) 0%, rgb(100, 22, 195) 90%);
+        background: linear-gradient(135deg, 
+            #667eea 0%, 
+            #764ba2 50%, 
+            #f093fb 100%);
+        background-attachment: fixed;
         color: white;
     }
 
-    /* Sidebar Liquid Glass */
+    /* ============================================
+       SIDEBAR - Premium Glass Effect
+       ============================================ */
+    
     section[data-testid="stSidebar"] {
-        background-color: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
-        width: 350px !important;
-        min-width: 350px !important;
+        background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.08) 100%
+        );
+        backdrop-filter: saturate(180%) blur(40px);
+        -webkit-backdrop-filter: saturate(180%) blur(40px);
+        border-right: 0.5px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
+        width: 380px !important;
+        min-width: 380px !important;
     }
     
-    /* Sidebar Content Color */
-    section[data-testid="stSidebar"] h1, section[data-testid="stSidebar"] h2, section[data-testid="stSidebar"] h3, section[data-testid="stSidebar"] span, section[data-testid="stSidebar"] div, section[data-testid="stSidebar"] label {
-        color: white !important;
+    section[data-testid="stSidebar"] .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    
+    /* Sidebar Typography - Perfect Contrast */
+    section[data-testid="stSidebar"] h1 {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 28px !important;
+        letter-spacing: -0.02em !important;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+        margin-bottom: 0 !important;
+    }
+    
+    section[data-testid="stSidebar"] .stCaption {
+        color: rgba(255, 255, 255, 0.75) !important;
+        font-weight: 500 !important;
+        font-size: 13px !important;
+        letter-spacing: 0.02em !important;
+        text-transform: uppercase;
+        margin-top: 4px !important;
+    }
+    
+    section[data-testid="stSidebar"] h2, 
+    section[data-testid="stSidebar"] h3 {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        margin-top: 1.5rem !important;
+    }
+    
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] p {
+        color: rgba(255, 255, 255, 0.95) !important;
+        font-weight: 400 !important;
     }
 
-    /* Input Fields - Translucent & Black Text */
+    /* ============================================
+       INPUT FIELDS - Glass Morphism
+       ============================================ */
+    
     .stTextInput>div>div>input {
-        background-color: rgba(255, 255, 255, 0.25);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 16px;
-        backdrop-filter: blur(20px);
-        color: #000000 !important;
-    }
-    .stTextInput>div>div>input::placeholder {
-        color: rgba(0, 0, 0, 0.6);
-    }
-
-    /* Selectbox - Fix Contrast */
-    .stSelectbox div[data-baseweb="select"] > div {
-        background-color: rgba(255, 255, 255, 0.15) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 16px !important;
-        backdrop-filter: blur(20px) !important;
-        color: #000000 !important;
-    }
-    /* Fix the text inside the selectbox */
-    .stSelectbox div[data-baseweb="select"] span {
-        color: #000000 !important;
-    }
-    /* Fix dropdown options */
-    ul[data-baseweb="menu"] li {
-        color: #000000 !important;
-        background-color: rgba(255, 255, 255, 0.9) !important;
-    }
-    
-    /* Buttons - Liquid & Readable */
-    .stButton>button, .stDownloadButton>button {
-        background: rgba(255, 255, 255, 0.25);
-        color: #000000 !important;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 16px;
-        height: 45px;
-        font-weight: 600;
-        backdrop-filter: blur(10px);
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .stButton>button:hover, .stDownloadButton>button:hover {
-        background: rgba(255, 255, 255, 0.4);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        border-color: rgba(255, 255, 255, 0.6);
-        color: #000000 !important;
-    }
-
-    /* Expander - High Contrast Glass (Fixed for Expanded State) */
-    .streamlit-expanderHeader, details > summary {
-        background-color: rgba(255, 255, 255, 0.15) !important;
+        background: rgba(255, 255, 255, 0.85) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3);
         border-radius: 12px;
-        color: #000000 !important;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    .streamlit-expanderHeader p, details > summary p {
-        color: #000000 !important;
-        font-weight: 600;
-    }
-    .streamlit-expanderHeader:hover, details > summary:hover {
-        color: #000000 !important;
-    }
-    .streamlit-expanderContent {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-        border-radius: 0 0 12px 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-top: none;
-        color: #000000 !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        color: #1d1d1f !important;
+        font-weight: 500;
+        padding: 12px 16px;
+        box-shadow: 
+            0 1px 3px rgba(0, 0, 0, 0.06),
+            inset 0 1px 2px rgba(255, 255, 255, 0.4);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    /* Alerts & Info - Readable Text */
-    .stAlert {
-        color: #000000 !important;
-    }
-    .stAlert > div {
-        color: #000000 !important;
-    }
-    .stAlert p {
-        color: #000000 !important;
+    .stTextInput>div>div>input:focus {
+        border-color: rgba(255, 255, 255, 0.6);
+        box-shadow: 
+            0 0 0 4px rgba(255, 255, 255, 0.1),
+            0 4px 12px rgba(0, 0, 0, 0.1),
+            inset 0 1px 2px rgba(255, 255, 255, 0.4);
+        outline: none;
     }
     
-    /* JSON Output */
-    .stJson {
-        background-color: rgba(255, 255, 255, 0.25);
-        border-radius: 16px;
-        padding: 20px;
-        backdrop-filter: blur(20px);
-        color: #000000 !important;
-    }
-    
-    /* File Uploader - Liquid Glass */
-    section[data-testid="stFileUploader"] {
-        background-color: rgba(255, 255, 255, 0.25);
-        border-radius: 16px;
-        padding: 20px;
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    section[data-testid="stFileUploader"] div {
-        color: #000000 !important;
-    }
-    section[data-testid="stFileUploader"] small {
-        color: #000000 !important;
+    .stTextInput>div>div>input::placeholder {
+        color: rgba(29, 29, 31, 0.5);
+        font-weight: 400;
     }
 
-    /* Headers */
-    h1, h2, h3 {
-        color: white !important;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    /* ============================================
+       SELECTBOX - Refined Dropdown
+       ============================================ */
+    
+    .stSelectbox div[data-baseweb="select"] > div {
+        background: rgba(255, 255, 255, 0.85) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 12px !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        color: #1d1d1f !important;
+        font-weight: 500 !important;
+        padding: 8px 12px !important;
+        box-shadow: 
+            0 1px 3px rgba(0, 0, 0, 0.06),
+            inset 0 1px 2px rgba(255, 255, 255, 0.4) !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    /* Dividers */
-    hr {
-        border-color: rgba(255, 255, 255, 0.2);
+    .stSelectbox div[data-baseweb="select"] > div:hover {
+        border-color: rgba(255, 255, 255, 0.5) !important;
     }
+    
+    .stSelectbox div[data-baseweb="select"] span {
+        color: #1d1d1f !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Dropdown Menu */
+    ul[data-baseweb="menu"] {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(40px) !important;
+        -webkit-backdrop-filter: blur(40px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+        padding: 8px !important;
+    }
+    
+    ul[data-baseweb="menu"] li {
+        color: #1d1d1f !important;
+        background: transparent !important;
+        border-radius: 8px !important;
+        font-weight: 500 !important;
+        padding: 10px 12px !important;
+        margin: 2px 0 !important;
+        transition: all 0.15s ease;
+    }
+    
+    ul[data-baseweb="menu"] li:hover {
+        background: rgba(102, 126, 234, 0.12) !important;
+    }
+
+    /* ============================================
+       BUTTONS - Apple Style
+       ============================================ */
+    
+    .stButton>button, .stDownloadButton>button {
+        background: rgba(255, 255, 255, 0.9);
+        color: #1d1d1f !important;
+        border: 0.5px solid rgba(255, 255, 255, 0.4);
+        border-radius: 12px;
+        height: 48px;
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: -0.01em;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 
+            0 2px 8px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 0 24px;
+    }
+    
+    .stButton>button:hover, .stDownloadButton>button:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateY(-1px);
+        box-shadow: 
+            0 4px 16px rgba(0, 0, 0, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        border-color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .stButton>button:active, .stDownloadButton>button:active {
+        transform: translateY(0);
+        box-shadow: 
+            0 1px 4px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    /* ============================================
+       EXPANDER - Accordion Style
+       ============================================ */
+    
+    .streamlit-expanderHeader, details > summary {
+        background: rgba(255, 255, 255, 0.85) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 12px !important;
+        color: #1d1d1f !important;
+        font-weight: 600 !important;
+        padding: 14px 16px !important;
+        box-shadow: 
+            0 1px 3px rgba(0, 0, 0, 0.06),
+            inset 0 1px 2px rgba(255, 255, 255, 0.4);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .streamlit-expanderHeader:hover, details > summary:hover {
+        background: rgba(255, 255, 255, 0.92) !important;
+        border-color: rgba(255, 255, 255, 0.5) !important;
+    }
+    
+    .streamlit-expanderHeader p, details > summary p {
+        color: #1d1d1f !important;
+        font-weight: 600 !important;
+        margin: 0 !important;
+    }
+    
+    .streamlit-expanderContent {
+        background: rgba(255, 255, 255, 0.75) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-top: none !important;
+        border-radius: 0 0 12px 12px !important;
+        padding: 16px !important;
+        margin-top: -1px !important;
+        backdrop-filter: blur(10px);
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .streamlit-expanderContent label,
+    .streamlit-expanderContent span,
+    .streamlit-expanderContent p {
+        color: #1d1d1f !important;
+    }
+
+    /* ============================================
+       ALERTS & INFO BOXES
+       ============================================ */
+    
+    .stAlert {
+        background: rgba(255, 255, 255, 0.9) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    
+    .stAlert > div, .stAlert p {
+        color: #1d1d1f !important;
+        font-weight: 500;
+    }
+    
+    /* Info boxes */
+    .stInfo {
+        background: rgba(102, 126, 234, 0.15) !important;
+        border-left: 4px solid rgba(102, 126, 234, 0.6) !important;
+    }
+    
+    /* Success boxes */
+    .stSuccess {
+        background: rgba(52, 199, 89, 0.15) !important;
+        border-left: 4px solid rgba(52, 199, 89, 0.6) !important;
+    }
+    
+    /* Error boxes */
+    .stError {
+        background: rgba(255, 59, 48, 0.15) !important;
+        border-left: 4px solid rgba(255, 59, 48, 0.6) !important;
+    }
+    
+    /* Warning boxes */
+    .stWarning {
+        background: rgba(255, 149, 0, 0.15) !important;
+        border-left: 4px solid rgba(255, 149, 0, 0.6) !important;
+    }
+
+    /* ============================================
+       JSON OUTPUT - Code Display
+       ============================================ */
+    
+    .stJson {
+        background: rgba(255, 255, 255, 0.9) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        padding: 20px;
+        backdrop-filter: blur(20px);
+        box-shadow: 
+            0 2px 8px rgba(0, 0, 0, 0.06),
+            inset 0 1px 2px rgba(255, 255, 255, 0.4);
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace !important;
+        color: #1d1d1f !important;
+    }
+
+    /* ============================================
+       FILE UPLOADER - Drag & Drop Zone
+       ============================================ */
+    
+    section[data-testid="stFileUploader"] {
+        background: rgba(255, 255, 255, 0.85);
+        border: 2px dashed rgba(255, 255, 255, 0.4);
+        border-radius: 16px;
+        padding: 32px 24px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 
+            0 2px 8px rgba(0, 0, 0, 0.06),
+            inset 0 1px 2px rgba(255, 255, 255, 0.4);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    section[data-testid="stFileUploader"]:hover {
+        border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.9);
+    }
+    
+    section[data-testid="stFileUploader"] div,
+    section[data-testid="stFileUploader"] small,
+    section[data-testid="stFileUploader"] span {
+        color: #1d1d1f !important;
+        font-weight: 500 !important;
+    }
+    
+    section[data-testid="stFileUploader"] button {
+        background: linear-gradient(180deg, 
+            rgba(102, 126, 234, 1) 0%, 
+            rgba(118, 75, 162, 1) 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 10px;
+        font-weight: 600;
+        padding: 10px 20px;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        transition: all 0.2s ease;
+    }
+    
+    section[data-testid="stFileUploader"] button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    }
+
+    /* ============================================
+       HEADERS - Typography Hierarchy
+       ============================================ */
+    
+    h1 {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 42px !important;
+        letter-spacing: -0.03em !important;
+        text-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+        margin-bottom: 8px !important;
+    }
+    
+    h2 {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        font-size: 28px !important;
+        letter-spacing: -0.02em !important;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    h3 {
+        color: rgba(255, 255, 255, 0.95) !important;
+        font-weight: 600 !important;
+        font-size: 20px !important;
+        letter-spacing: -0.01em !important;
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* ============================================
+       DIVIDERS & SPACING
+       ============================================ */
+    
+    hr {
+        border: none;
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.3) 50%,
+            transparent 100%
+        );
+        margin: 24px 0;
+    }
+    
+    /* Main content spacing */
+    .block-container {
+        padding-top: 3rem !important;
+        padding-bottom: 3rem !important;
+    }
+
+    /* ============================================
+       IMAGE CONTAINERS - Gallery Style
+       ============================================ */
+    
+    [data-testid="stImage"] {
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.15),
+            0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+    
+    [data-testid="stImage"] img {
+        border-radius: 16px;
+    }
+
+    /* ============================================
+       SPINNER - Loading Animation
+       ============================================ */
+    
+    .stSpinner > div {
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        border-top-color: white !important;
+    }
+
+    /* ============================================
+       SCROLLBAR - Minimal Design
+       ============================================ */
+    
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        transition: background 0.2s;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -216,8 +529,8 @@ def add_field():
 
 # Sidebar
 with st.sidebar:
-    st.title("Spektr")
-    st.caption("v4.0 • Liquid Intelligence")
+    st.title("Spektr Document OCR")
+    st.caption("v5.0 • Premium Edition")
     
     with st.expander("➕ Add New Field", expanded=False):
         st.text_input("Field Name", key="new_field_name", placeholder="e.g., summary")
@@ -275,7 +588,7 @@ with st.sidebar:
                     st.rerun()
 
 # Main Area
-st.title("Spektr")
+st.title("Spektr Document OCR")
 st.markdown("### Upload & Extract")
 
 uploaded_file = st.file_uploader("Drop your document here", type=['png', 'jpg', 'jpeg', 'pdf'])
