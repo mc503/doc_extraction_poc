@@ -63,19 +63,20 @@ st.markdown("""
         color: rgba(0, 0, 0, 0.6);
     }
     
-    /* Sidebar Text Inputs - More Translucent Like Dropdowns */
+    
+    /* Sidebar Text Inputs - Translucent with White Text */
     section[data-testid="stSidebar"] .stTextInput>div>div>input {
         background-color: rgba(255, 255, 255, 0.15) !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 16px !important;
         backdrop-filter: blur(20px) !important;
-        color: #000000 !important;
+        color: #FFFFFF !important;
     }
     section[data-testid="stSidebar"] .stTextInput>div>div>input::placeholder {
-        color: rgba(0, 0, 0, 0.6) !important;
+        color: rgba(255, 255, 255, 0.6) !important;
     }
 
-    /* Selectbox - Fix Contrast */
+    /* Selectbox - Translucent */
     .stSelectbox div[data-baseweb="select"] > div {
         background-color: rgba(255, 255, 255, 0.15) !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -87,6 +88,19 @@ st.markdown("""
     .stSelectbox div[data-baseweb="select"] span {
         color: #000000 !important;
     }
+    
+    /* Sidebar Selectbox - White Text */
+    section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] > div {
+        background-color: rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 16px !important;
+        backdrop-filter: blur(20px) !important;
+        color: #FFFFFF !important;
+    }
+    section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] span {
+        color: #FFFFFF !important;
+    }
+    
     /* Fix dropdown options */
     ul[data-baseweb="menu"] li {
         color: #000000 !important;
@@ -111,6 +125,18 @@ st.markdown("""
         box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         border-color: rgba(255, 255, 255, 0.6);
         color: #000000 !important;
+    }
+    
+    /* Sidebar Buttons - White Text */
+    section[data-testid="stSidebar"] .stButton>button {
+        background: rgba(255, 255, 255, 0.15) !important;
+        color: #FFFFFF !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
+    section[data-testid="stSidebar"] .stButton>button:hover {
+        background: rgba(255, 255, 255, 0.25) !important;
+        color: #FFFFFF !important;
+        border-color: rgba(255, 255, 255, 0.4) !important;
     }
 
     /* Expander - High Contrast Glass (Fixed for Expanded State) */
