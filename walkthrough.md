@@ -34,13 +34,7 @@ macOS comes with a system Python, but it's best to install a fresh version for d
     python3 --version
     ```
 
-### Step 3: Install Poppler (Required for PDF support)
-Poppler is a utility that allows the app to read PDF files.
 
-1.  Run the following command:
-    ```bash
-    brew install poppler
-    ```
 
 ### Step 4: Get an OpenAI API Key
 You need a valid API key from OpenAI to power the extraction engine.
@@ -123,5 +117,5 @@ This will automatically open the application in your default web browser (usuall
 ## Troubleshooting
 
 *   **"command not found: brew"**: You might need to add Homebrew to your PATH. The installation script usually tells you how to do this at the end (look for "Next steps").
-*   **"Poppler is not installed"**: Run `brew install poppler` again to make sure it finished successfully.
+
 *   **OpenAI API Error**: Check your `.env` file and ensure you have credits in your OpenAI account.

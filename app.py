@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from PIL import Image
 import io
-from pdf2image import convert_from_bytes
+import pypdfium2 as pdfium
 
 from backend import DocumentProcessor, FieldDefinition, FieldType, FieldLength
 
@@ -288,15 +288,16 @@ if uploaded_file:
         
         if uploaded_file.type == "application/pdf":
             try:
-                images = convert_from_bytes(uploaded_file.read())
-                if images:
-                    image_to_process = images[0] # Just take the first page for POC
-                    st.image(image_to_process, caption="Page 1 Preview", use_container_width=True)
-                    # Reset pointer for processing
-                    uploaded_file.seek(0)
+                pdf = pdfium.PdfDocument(uploaded_file.read())
+                page = pdf[0]
+                bitmap = page.render(scale=2)  # Render at 2x scale for better quality
+                image_to_process = bitmap.to_pil()
+                
+                st.image(image_to_process, caption="Page 1 Preview", use_container_width=True)
+                # Reset pointer for processing
+                uploaded_file.seek(0)
             except Exception as e:
                 st.error(f"Error converting PDF: {e}")
-                st.warning("Please ensure poppler is installed on the system.")
         else:
             image_to_process = Image.open(uploaded_file)
             st.image(image_to_process, caption="Uploaded Image", use_container_width=True)
