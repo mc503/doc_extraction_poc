@@ -9,7 +9,26 @@ from openai import OpenAI
 from tenacity import retry, stop_after_attempt, wait_exponential
 from dotenv import load_dotenv
 
+# Try to import streamlit for secrets (cloud deployment)
+try:
+    import streamlit as st
+    HAS_STREAMLIT = True
+except ImportError:
+    HAS_STREAMLIT = False
+
 load_dotenv()
+
+def get_api_key() -> Optional[str]:
+    """Get API key from Streamlit secrets (cloud) or .env file (local)."""
+    # First, try Streamlit secrets (for cloud deployment)
+    if HAS_STREAMLIT:
+        try:
+            return st.secrets.get("OPENAI_API_KEY")
+        except (KeyError, FileNotFoundError):
+            pass
+    
+    # Fall back to environment variable (from .env file)
+    return os.getenv("OPENAI_API_KEY")
 
 class FieldType(str, Enum):
     STRING = "String"
@@ -64,7 +83,7 @@ class DynamicSchemaGenerator:
 
 class DocumentProcessor:
     def __init__(self, api_key: Optional[str] = None):
-        self.client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
+        self.client = OpenAI(api_key=api_key or get_api_key())
 
     def _encode_image(self, image_bytes: bytes) -> str:
         return base64.b64encode(image_bytes).decode('utf-8')

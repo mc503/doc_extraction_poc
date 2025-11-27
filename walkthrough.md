@@ -78,6 +78,8 @@ pip3 install -r requirements.txt
 
 ## 3. Configuration
 
+### Option A: Using `.env` file (Local Development)
+
 1.  Find the file named `.env.example` in the project folder.
 2.  Rename it to `.env`.
 3.  Open `.env` in a text editor (like TextEdit, VS Code, or Nano).
@@ -86,6 +88,20 @@ pip3 install -r requirements.txt
 ```env
 OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxx
 ```
+
+### Option B: Using Streamlit Secrets (Local or Cloud)
+
+You can also use Streamlit's built-in secrets management, which works both locally and on Streamlit Community Cloud:
+
+1.  Navigate to the `.streamlit` folder in the project directory.
+2.  Copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml`.
+3.  Open `.streamlit/secrets.toml` and paste your API key:
+
+```toml
+OPENAI_API_KEY = "sk-proj-xxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+> **Note:** Both methods work. The app will check Streamlit secrets first, then fall back to `.env` if not found.
 
 ## 4. Running the Application
 
@@ -114,8 +130,37 @@ This will automatically open the application in your default web browser (usuall
     *   The results will appear as a JSON object.
     *   Click **Download JSON** to save the data.
 
+## 6. Deploying to Streamlit Community Cloud
+
+To share Spektr with your team, you can deploy it to Streamlit Community Cloud for free:
+
+### Prerequisites
+1.  Push your code to a GitHub repository.
+2.  **Important:** Make sure `.env` and `.streamlit/secrets.toml` are in your `.gitignore` (they already are if you're using the provided `.gitignore` file).
+
+### Deployment Steps
+1.  Go to [share.streamlit.io](https://share.streamlit.io).
+2.  Sign in with your GitHub account.
+3.  Click **"New app"**.
+4.  Select your repository, branch, and set the main file to `app.py`.
+5.  Click **"Advanced settings"** and add your secrets:
+    ```toml
+    OPENAI_API_KEY = "sk-proj-your-actual-key-here"
+    ```
+6.  Click **"Deploy"**.
+
+Your app will be live in a few minutes and accessible via a public URL that you can share with your team!
+
+### Updating Secrets on Streamlit Cloud
+If you need to update your API key later:
+1. Go to your app's settings on [share.streamlit.io](https://share.streamlit.io).
+2. Navigate to **"Secrets"** section.
+3. Update the `OPENAI_API_KEY` value.
+4. Save and reboot the app.
+
 ## Troubleshooting
 
 *   **"command not found: brew"**: You might need to add Homebrew to your PATH. The installation script usually tells you how to do this at the end (look for "Next steps").
 
-*   **OpenAI API Error**: Check your `.env` file and ensure you have credits in your OpenAI account.
+*   **OpenAI API Error**: Check your `.env` file or `.streamlit/secrets.toml` and ensure you have credits in your OpenAI account.
+
