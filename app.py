@@ -34,6 +34,8 @@ st.markdown("""
         backdrop-filter: blur(30px);
         -webkit-backdrop-filter: blur(30px);
         border-right: 1px solid rgba(255, 255, 255, 0.1);
+        width: 350px !important;
+        min-width: 350px !important;
     }
     
     /* Sidebar Content Color */
