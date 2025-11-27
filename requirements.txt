@@ -1,0 +1,7 @@
+streamlit
+openai
+pydantic
+tenacity
+pdf2image
+python-dotenv
+Pillow
