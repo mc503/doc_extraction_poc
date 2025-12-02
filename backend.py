@@ -89,9 +89,10 @@ class DocumentProcessor:
         return base64.b64encode(image_bytes).decode('utf-8')
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
-    def extract_data(self, file_bytes: bytes, file_type: str, fields: List[FieldDefinition]) -> Dict[str, Any]:
+    def extract_data(self, file_bytes_list: List[bytes], file_type: str, fields: List[FieldDefinition]) -> Dict[str, Any]:
         """
         Extracts data from the document using OpenAI GPT-4o with a dynamic schema.
+        Accepts a list of file bytes (one per page/image).
         """
         # Note: We allow empty 'fields' list because we have default fields now.
         # if not fields:
@@ -100,19 +101,28 @@ class DocumentProcessor:
         # 1. Generate the dynamic Pydantic model
         DynamicModel = DynamicSchemaGenerator.generate_model(fields)
 
-        # 2. Prepare the image for the API
-        base64_image = self._encode_image(file_bytes)
-        
+        # 2. Prepare the images for the API
+        content_list = [
+            {
+                "type": "text", 
+                "text": "Extract the following information from this document."
+            }
+        ]
+
         # Determine media type
         media_type = "image/jpeg"
         if file_type == "png":
             media_type = "image/png"
-        elif file_type == "pdf":
-             # Note: For PDF, in a real app we might convert to image first using pdf2image.
-             # For this POC, we'll assume the user uploads an image or we handle PDF conversion in app.py
-             # Or we can try to send it if OpenAI supports it (currently vision supports images).
-             # Let's assume we receive image bytes here.
-             pass
+        
+        # Add each image to the content list
+        for file_bytes in file_bytes_list:
+            base64_image = self._encode_image(file_bytes)
+            content_list.append({
+                "type": "image_url",
+                "image_url": {
+                    "url": f"data:{media_type};base64,{base64_image}"
+                }
+            })
 
         # 3. Call OpenAI API
         response = self.client.beta.chat.completions.parse(
@@ -122,7 +132,7 @@ class DocumentProcessor:
                     "role": "system",
                     "content": (
                         "You are an expert document extraction AI. "
-                        "Analyze the provided image and extract the requested fields. "
+                        "Analyze the provided image(s) and extract the requested fields. "
                         "If the image is rotated or blurry, try to detect and correct orientation mentally before extracting. "
                         "Return the data strictly in the requested JSON format."
                         "Do not make up data that is not in the document."
@@ -130,18 +140,7 @@ class DocumentProcessor:
                 },
                 {
                     "role": "user",
-                    "content": [
-                        {
-                            "type": "text", 
-                            "text": "Extract the following information from this document."
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:{media_type};base64,{base64_image}"
-                            }
-                        }
-                    ]
+                    "content": content_list
                 }
             ],
             response_format=DynamicModel,

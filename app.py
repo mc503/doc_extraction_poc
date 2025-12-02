@@ -306,23 +306,33 @@ if uploaded_file:
     # Display Document
     with col2:
         st.markdown("#### Preview")
-        image_to_process = None
+        images_to_process = []
         
         if uploaded_file.type == "application/pdf":
             try:
                 pdf = pdfium.PdfDocument(uploaded_file.read())
-                page = pdf[0]
-                bitmap = page.render(scale=2)  # Render at 2x scale for better quality
-                image_to_process = bitmap.to_pil()
+                num_pages = len(pdf)
+                st.caption(f"Processing {num_pages} page(s)")
                 
-                st.image(image_to_process, caption="Page 1 Preview", use_container_width=True)
+                # Create a container for the carousel/list of images
+                with st.container(height=600):
+                    for i in range(num_pages):
+                        page = pdf[i]
+                        bitmap = page.render(scale=2)  # Render at 2x scale for better quality
+                        pil_image = bitmap.to_pil()
+                        images_to_process.append(pil_image)
+                        
+                        st.image(pil_image, caption=f"Page {i+1}", use_container_width=True)
+                        st.divider()
+                
                 # Reset pointer for processing
                 uploaded_file.seek(0)
             except Exception as e:
                 st.error(f"Error converting PDF: {e}")
         else:
-            image_to_process = Image.open(uploaded_file)
-            st.image(image_to_process, caption="Uploaded Image", use_container_width=True)
+            image = Image.open(uploaded_file)
+            images_to_process.append(image)
+            st.image(image, caption="Uploaded Image", use_container_width=True)
             uploaded_file.seek(0)
 
     # Extraction Action
@@ -332,21 +342,23 @@ if uploaded_file:
         if st.button("✨ Run Extraction", type="primary"):
             if not st.session_state.fields:
                 st.error("Please add at least one field.")
-            elif not image_to_process:
+            elif not images_to_process:
                 st.error("No valid image to process.")
             else:
                 with st.spinner("Analyzing document..."):
                     try:
                         processor = DocumentProcessor()
                         
-                        # Convert image to bytes
-                        img_byte_arr = io.BytesIO()
-                        image_to_process.save(img_byte_arr, format='PNG')
-                        img_byte_arr = img_byte_arr.getvalue()
+                        # Convert images to bytes
+                        img_bytes_list = []
+                        for img in images_to_process:
+                            img_byte_arr = io.BytesIO()
+                            img.save(img_byte_arr, format='PNG')
+                            img_bytes_list.append(img_byte_arr.getvalue())
                         
                         result = processor.extract_data(
-                            file_bytes=img_byte_arr,
-                            file_type='png',
+                            file_bytes_list=img_bytes_list,
+                            file_type='png', # We convert everything to PNG bytes
                             fields=st.session_state.fields
                         )
                         
