@@ -155,6 +155,9 @@ To verify the changes yourself:
     -   Check "Include Reasoning".
     -   Verify that the new field appears in "Active Fields" with the "Include Reasoning" checkbox checked.
     -   Run extraction and verify the output includes reasoning for this custom field.
+3.  **State Tracking**:
+    -   **Include Reasoning**: Toggle "Include Reasoning" for an active field. The "Save Changes" button should immediately become active.
+    -   **Revert Changes**: Modify a field name (Save Changes appears), then change it back to the original name. The "Save Changes" button should revert to "Saved".
 
 ## 5. Using Spektr
 

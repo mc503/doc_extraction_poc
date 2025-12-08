@@ -296,32 +296,8 @@ with st.sidebar:
         on_change=load_template
     )
     
-    # Template Actions
-    col_t1, col_t2 = st.columns(2)
-    
-    # Check for changes
-    has_changes = st.session_state.fields != st.session_state.original_template_fields
-    
-    with col_t1:
-        if has_changes:
-            if st.button("💾 Save Changes", use_container_width=True):
-                st.session_state.templates[st.session_state.selected_template] = list(st.session_state.fields)
-                st.session_state.original_template_fields = list(st.session_state.fields) # Update original
-                st.success("Saved!")
-        else:
-            st.button("💾 Saved", disabled=True, use_container_width=True)
-            
-    with col_t2:
-        if st.button("🗑️ Delete", use_container_width=True):
-            if len(st.session_state.templates) > 1:
-                del st.session_state.templates[st.session_state.selected_template]
-                # Reset to first available
-                st.session_state.selected_template = list(st.session_state.templates.keys())[0]
-                st.session_state.fields = list(st.session_state.templates[st.session_state.selected_template])
-                st.session_state.original_template_fields = list(st.session_state.fields)
-                st.rerun()
-            else:
-                st.error("Cannot delete the last template.")
+    # Template Actions Placeholder
+    actions_placeholder = st.empty()
 
     with st.expander("Save as New Template", expanded=False):
         new_template_name = st.text_input("New Name", placeholder="e.g., Invoices")
@@ -398,6 +374,35 @@ with st.sidebar:
                 if st.button("Remove Field", key=f"del_{i}"):
                     st.session_state.fields.pop(i)
                     st.rerun()
+
+    # Render Template Actions (after fields update)
+    with actions_placeholder.container():
+        col_t1, col_t2 = st.columns(2)
+        
+        # Check for changes
+        has_changes = st.session_state.fields != st.session_state.original_template_fields
+        
+        with col_t1:
+            if has_changes:
+                if st.button("💾 Save Changes", use_container_width=True):
+                    st.session_state.templates[st.session_state.selected_template] = list(st.session_state.fields)
+                    st.session_state.original_template_fields = list(st.session_state.fields) # Update original
+                    st.success("Saved!")
+                    st.rerun() # Rerun to update state immediately
+            else:
+                st.button("💾 Saved", disabled=True, use_container_width=True)
+                
+        with col_t2:
+            if st.button("🗑️ Delete", use_container_width=True):
+                if len(st.session_state.templates) > 1:
+                    del st.session_state.templates[st.session_state.selected_template]
+                    # Reset to first available
+                    st.session_state.selected_template = list(st.session_state.templates.keys())[0]
+                    st.session_state.fields = list(st.session_state.templates[st.session_state.selected_template])
+                    st.session_state.original_template_fields = list(st.session_state.fields)
+                    st.rerun()
+                else:
+                    st.error("Cannot delete the last template.")
 
 # Main Area
 st.title("Spektr")
