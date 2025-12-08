@@ -164,7 +164,8 @@ To verify the changes yourself:
     -   Select the "Ownership" template.
     -   Upload an ownership chart (e.g., an image of a corporate structure).
     -   Run extraction.
-    -   Verify the output JSON contains a list of nodes with `spektrId`, `details`, and `adj` (adjacency list) representing the graph structure.
+    -   Verify the output JSON contains a list of nodes with `spektrId`, `details` (including `company_name`, `ownership`, `isBeneficiary`), and `adj` (adjacency list) representing the graph structure.
+    -   Verify that it captures the complex relationships as shown in the example.
 
 ## 5. Using Spektr
 

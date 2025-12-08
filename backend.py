@@ -61,6 +61,8 @@ class OwnershipAdjacency(BaseModel):
     shareholding: OwnershipShareholding
     entityPositions: List[str]
     entityRoles: List[str]
+    id: Optional[str] = None
+    signatorySnippets: Optional[List[str]] = []
 
 class OwnershipDetails(BaseModel):
     name: str
@@ -69,10 +71,17 @@ class OwnershipDetails(BaseModel):
     isBeneficiary: bool
     company_name: Optional[str] = None
     full_name: Optional[str] = None
+    category: Optional[str] = None
+    position: Optional[str] = None
+    
+    class Config:
+        extra = "allow"
 
 class OwnershipNode(BaseModel):
     spektrId: str
     status: str = "pending"
+    updatedAt: Optional[int] = None
+    createdAt: Optional[int] = None
     details: OwnershipDetails
     adj: List[OwnershipAdjacency]
 
