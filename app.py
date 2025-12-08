@@ -276,21 +276,21 @@ common_fields_inject = [
     FieldDefinition(name="document_date", data_type=FieldType.STRING, description="Creation date. Look for 'Date:', 'Issued:', or the main document date. Format strictly 'ddmmyyyy'.", length=FieldLength.SHORT),
 ]
 
-    st.session_state.templates["Ownership"] = common_fields_inject + [
-        FieldDefinition(
-            name="ownership_graph", 
-            data_type=FieldType.OWNERSHIP_GRAPH, 
-            description=(
-                "Extract the ownership structure as a graph. "
-                "1. Identify every distinct Entity (Person or Company). "
-                "2. Assign a temporary unique ID to each entity (e.g., '1', '2'). "
-                "3. For every entity, list who they own (children) in the 'adj' list using these IDs. "
-                "4. Fill 'details' with visible text (names, types, percentages). "
-                "5. Output a JSON Array of objects where each object represents one entity."
-            ), 
-            length=FieldLength.LONG
-        )
-    ]
+st.session_state.templates["Ownership"] = common_fields_inject + [
+    FieldDefinition(
+        name="ownership_graph", 
+        data_type=FieldType.OWNERSHIP_GRAPH, 
+        description=(
+            "Extract the ownership structure as a graph. "
+            "1. Identify every distinct Entity (Person or Company). "
+            "2. Assign a temporary unique ID to each entity (e.g., '1', '2'). "
+            "3. For every entity, list who they own (children) in the 'adj' list using these IDs. "
+            "4. Fill 'details' with visible text (names, types, percentages). "
+            "5. Output a JSON Array of objects where each object represents one entity."
+        ), 
+        length=FieldLength.LONG
+    )
+]
 
 if 'selected_template' not in st.session_state:
     st.session_state.selected_template = "AML"
