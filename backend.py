@@ -232,4 +232,4 @@ class DocumentProcessor:
         )
 
         # 4. Parse and return result
-        return response.choices[0].message.parsed.model_dump()
+        return response.choices[0].message.parsed.model_dump(exclude_none=True)
