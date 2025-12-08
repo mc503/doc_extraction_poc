@@ -63,9 +63,6 @@ class OwnershipDetails(BaseModel):
     name: str
     type: str # company OR individual
     ownership_percentage: Optional[float] = None
-    
-    class Config:
-        extra = "allow"
 
 class OwnershipNode(BaseModel):
     id: str
