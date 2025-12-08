@@ -299,6 +299,25 @@ if 'original_template_fields' not in st.session_state:
 if 'extraction_result' not in st.session_state:
     st.session_state.extraction_result = None
 
+# Force reload fields if we are on Ownership template but the fields don't match the new definition
+# (e.g. if the user has a stale session state where ownership_graph was a boolean or missing)
+if st.session_state.selected_template == "Ownership":
+    current_field_names = [f.name for f in st.session_state.fields]
+    # Check if ownership_graph is missing OR if it exists but has the wrong type
+    needs_reload = "ownership_graph" not in current_field_names
+    
+    if not needs_reload:
+        # Check type
+        for f in st.session_state.fields:
+            if f.name == "ownership_graph" and f.data_type != FieldType.OWNERSHIP_GRAPH:
+                needs_reload = True
+                break
+    
+    if needs_reload:
+        st.session_state.fields = list(st.session_state.templates["Ownership"])
+        st.session_state.original_template_fields = list(st.session_state.templates["Ownership"])
+        st.rerun()
+
 def load_template():
     """Load fields from the selected template."""
     template_name = st.session_state.template_selector

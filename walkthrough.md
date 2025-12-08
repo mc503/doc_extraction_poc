@@ -162,6 +162,7 @@ To verify the changes yourself:
     -   **BRA**: Verify there is a new "BRA" template in the dropdown, containing the common fields plus "customer_risk_assessment", "geographical_risk", etc.
 5.  **Ownership Analysis**:
     -   Select the "Ownership" template.
+    -   **Verify Field Type**: Ensure the "ownership_graph" field shows "Ownership Graph" as its type in the sidebar (not Boolean).
     -   Upload an ownership chart (e.g., an image of a corporate structure).
     -   Run extraction.
     -   Verify the output JSON contains a list of nodes with `spektrId`, `details` (including `company_name`, `ownership`, `isBeneficiary`), and `adj` (adjacency list) representing the graph structure.
