@@ -52,20 +52,61 @@ class FieldDefinition(BaseModel):
 
 # --- Ownership Models ---
 class OwnershipShareholding(BaseModel):
-    percentage: float
+    percentage: Optional[str] = None
+    role: Optional[str] = None
 
 class OwnershipAdjacency(BaseModel):
-    id: str # Reference to the child's ID
-    shareholding: OwnershipShareholding
+    id: Optional[str] = None
+    spektrId: Optional[str] = None
+    directOrIndirect: Optional[str] = None
+    shareholding: Optional[OwnershipShareholding] = None
+    entityPositions: Optional[List[str]] = None
+    entityRoles: Optional[List[str]] = None
+    signatorySnippets: Optional[List[str]] = None
     type: str = "child"
 
 class OwnershipDetails(BaseModel):
-    name: str
-    type: str # company OR individual
+    name: Optional[str] = None
+    type: Optional[str] = None # company OR individual
     ownership_percentage: Optional[float] = None
+    company_name: Optional[str] = None
+    company_full_address: Optional[str] = None
+    zip_code: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    company_number: Optional[str] = None
+    company_type: Optional[str] = None
+    registration_authority: Optional[str] = None
+    website_url: Optional[str] = None
+    multiple_website_urls: Optional[str] = None
+    choose_vendor: Optional[str] = None
+    graph_vs_list: Optional[str] = None
+    company_search: Optional[str] = None
+    customer_type: Optional[str] = None
+    category: Optional[str] = None
+    isBeneficiary: Optional[bool] = None
+    ownership: Optional[float] = None
+    control_type: Optional[str] = None
+    position: Optional[str] = None
+    appointment_date: Optional[str] = None
+    authority_scope: Optional[str] = None
+    authority_validity_until: Optional[str] = None
+    email: Optional[str] = None
+    phone_number: Optional[str] = None
+    beneficial_owners: Optional[str] = None
+    beneficial_owners_ownership: Optional[float] = None
+    beneficial_owners_control_type: Optional[str] = None
+    ultimate_beneficial_owners: Optional[str] = None
+    ultimate_beneficial_owners_ownership: Optional[float] = None
+    ultimate_beneficial_owners_control_type: Optional[str] = None
+    full_name: Optional[str] = None
 
 class OwnershipNode(BaseModel):
     id: str
+    spektrId: Optional[str] = None
+    status: Optional[str] = "pending"
+    updatedAt: Optional[int] = None
+    createdAt: Optional[int] = None
     details: OwnershipDetails
     adj: List[OwnershipAdjacency]
 

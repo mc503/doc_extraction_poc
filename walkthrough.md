@@ -166,8 +166,9 @@ To verify the changes yourself:
     -   Upload an ownership chart.
     -   Run extraction.
     -   Verify the output JSON is an array of objects.
-    -   Verify each object has an `id` (e.g., "1"), `details` (name, type, ownership_percentage), and `adj` (list of children with IDs).
-    -   Confirm the graph structure correctly links entities via these IDs.
+    -   Verify each object has an `id` and `details`.
+    -   **Check Details**: Verify that `details` contains rich information if available in the document (e.g., `company_name`, `company_number`, `company_full_address`, `beneficial_owners`, etc.), matching the expanded schema.
+    -   Confirm the graph structure correctly links entities via IDs in `adj`.
 
 ## 5. Using Spektr
 
