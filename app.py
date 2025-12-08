@@ -341,8 +341,7 @@ if st.session_state.selected_template == "Ownership":
     if needs_reload:
         st.session_state.fields = list(st.session_state.templates["Ownership"])
         st.session_state.original_template_fields = list(st.session_state.templates["Ownership"])
-        print("DEBUG: Triggering RERUN due to ownership mismatch")
-        st.rerun()
+        # No rerun needed; effective immediately for subsequent rendering
 
 def load_template():
     """Load fields from the selected template."""
