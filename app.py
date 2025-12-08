@@ -259,7 +259,17 @@ if 'templates' not in st.session_state:
             FieldDefinition(
                 name="ownership_graph", 
                 data_type=FieldType.OWNERSHIP_GRAPH, 
-                description="Extract the full ownership structure. Identify the root company and all related entities (shareholders, UBOs, subsidiaries). For each node, provide details (name, type, ownership %) and adjacency list (adj) linking to other nodes with shareholding info. Follow the strict JSON structure for nodes and edges.", 
+                description=(
+                    "Extract the ownership structure as a graph. "
+                    "CRITICAL: Create a SEPARATE node object for EACH distinct entity (Person or Company) found in the chart. "
+                    "Do NOT merge a company and its owner into the same object. "
+                    "1. Identify every distinct box or name. "
+                    "2. Assign a unique ID to each. "
+                    "3. Define relationships in 'adj': if A owns B, put B's ID in A's adjacency list. "
+                    "4. IMPORTANT: If a person is labeled as 'UBO', 'Director', etc., include this in 'entityRoles' within the adjacency object linking to them. "
+                    "5. 'details' must ONLY contain info specific to that single entity. "
+                    "6. Output a flat JSON Array of these node objects."
+                ), 
                 length=FieldLength.LONG
             )
         ]

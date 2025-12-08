@@ -67,7 +67,7 @@ class OwnershipAdjacency(BaseModel):
 
 class OwnershipDetails(BaseModel):
     name: Optional[str] = None
-    type: Optional[Literal["company", "individual"]] = None # Enforce company or individual
+    type: Optional[Literal["company", "individual"]] = Field(None, description="Must be either 'company' or 'individual'")
     ownership_percentage: Optional[float] = None
     company_name: Optional[str] = None
     company_full_address: Optional[str] = None
@@ -82,7 +82,7 @@ class OwnershipDetails(BaseModel):
     choose_vendor: Optional[str] = None
     graph_vs_list: Optional[str] = None
     company_search: Optional[str] = None
-    customer_type: Optional[str] = None
+    customer_type: Optional[Literal["company", "individual"]] = None
     category: Optional[str] = None
     isBeneficiary: Optional[bool] = None
     ownership: Optional[float] = None
