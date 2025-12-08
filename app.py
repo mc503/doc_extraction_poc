@@ -95,7 +95,7 @@ st.markdown("""
     }
     
     /* Buttons - Liquid & Readable */
-    .stButton>button, .stDownloadButton>button {
+    .stButton button, .stDownloadButton button {
         background: rgba(255, 255, 255, 0.25);
         color: #000000 !important; /* Black text for better visibility */
         border: 1px solid rgba(255, 255, 255, 0.4);
@@ -106,7 +106,7 @@ st.markdown("""
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
-    .stButton>button:hover, .stDownloadButton>button:hover {
+    .stButton button:hover, .stDownloadButton button:hover {
         background: rgba(255, 255, 255, 0.4);
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(0,0,0,0.2);
@@ -114,7 +114,7 @@ st.markdown("""
         color: #000000 !important;
     }
     /* Primary Button */
-    .stButton>button[kind="primary"] {
+    .stButton button[kind="primary"] {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border: none;
         box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
@@ -304,7 +304,7 @@ with st.sidebar:
     
     with col_t1:
         if has_changes:
-            if st.button("💾 Save Changes", use_container_width=True, help="Update the current template with active fields"):
+            if st.button("💾 Save Changes", use_container_width=True):
                 st.session_state.templates[st.session_state.selected_template] = list(st.session_state.fields)
                 st.session_state.original_template_fields = list(st.session_state.fields) # Update original
                 st.success("Saved!")
@@ -312,7 +312,7 @@ with st.sidebar:
             st.button("💾 Saved", disabled=True, use_container_width=True)
             
     with col_t2:
-        if st.button("🗑️ Delete", use_container_width=True, help="Delete the current template"):
+        if st.button("🗑️ Delete", use_container_width=True):
             if len(st.session_state.templates) > 1:
                 del st.session_state.templates[st.session_state.selected_template]
                 # Reset to first available

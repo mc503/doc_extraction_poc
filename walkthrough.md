@@ -149,6 +149,7 @@ To verify the changes yourself:
     -   Verify that "Save Changes" and "Delete" buttons have black text on a readable background in their default state.
     -   Verify that hovering over them maintains readability (black text).
     -   Verify that they look consistent with "Add Field" and "Remove Field".
+    -   *Note*: Help tooltips were removed from these buttons to ensure consistent styling.
 2.  **Custom Field Reasoning**:
     -   Add a new field using the "Add New Field" form.
     -   Check "Include Reasoning".
