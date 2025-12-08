@@ -171,10 +171,6 @@ class DocumentProcessor:
         Extracts data from the document using OpenAI GPT-4o with a dynamic schema.
         Accepts a list of file bytes (one per page/image).
         """
-        # Note: We allow empty 'fields' list because we have default fields now.
-        # if not fields:
-        #    return {"error": "No fields defined for extraction."}
-
         # 1. Generate the dynamic Pydantic model
         DynamicModel = DynamicSchemaGenerator.generate_model(fields)
 

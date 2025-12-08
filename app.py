@@ -1,10 +1,12 @@
 import streamlit as st
-import pandas as pd
 from PIL import Image
 import io
+import json
+from pathlib import Path
 import pypdfium2 as pdfium
 
 from backend import DocumentProcessor, FieldDefinition, FieldType, FieldLength
+from templates import get_default_templates, OWNERSHIP_FIELDS
 
 # Page Config
 st.set_page_config(
@@ -14,298 +16,25 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Spektr "Liquid Glass" CSS
-st.markdown("""
-<style>
-    /* Global Font */
-    html, body, [class*="css"] {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
 
-    /* Background Gradient - Vibrant & Deep */
-    .stApp {
-        background: radial-gradient(circle at 10% 20%, rgb(69, 86, 255) 0%, rgb(100, 22, 195) 90%);
-        color: white;
-    }
-    
-    /* Header Bar - Translucent Purple */
-    header[data-testid="stHeader"] {
-        background: linear-gradient(90deg, rgba(100, 22, 195, 0.3) 0%, rgba(69, 86, 255, 0.3) 100%) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    }
+def load_css():
+    """Load CSS from external stylesheet."""
+    css_path = Path(__file__).parent / ".streamlit" / "style.css"
+    if css_path.exists():
+        st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
-    /* Sidebar Liquid Glass */
-    section[data-testid="stSidebar"] {
-        background-color: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
-        width: 350px !important;
-        min-width: 350px !important;
-    }
-    
-    /* Sidebar Content Color */
-    section[data-testid="stSidebar"] h1, section[data-testid="stSidebar"] h2, section[data-testid="stSidebar"] h3, section[data-testid="stSidebar"] span, section[data-testid="stSidebar"] div, section[data-testid="stSidebar"] label {
-        color: white !important;
-    }
 
-    /* Input Fields - Translucent & Black Text */
-    .stTextInput>div>div>input {
-        background-color: rgba(255, 255, 255, 0.9); /* Increased opacity for readability */
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 12px;
-        backdrop-filter: blur(20px);
-        color: #000000 !important;
-        font-weight: 500;
-    }
-    .stTextInput>div>div>input::placeholder {
-        color: rgba(0, 0, 0, 0.5);
-    }
-    
-    /* Sidebar Text Inputs */
-    section[data-testid="stSidebar"] .stTextInput>div>div>input {
-        background-color: rgba(255, 255, 255, 0.8) !important; /* High opacity for readability */
-        border: 1px solid rgba(255, 255, 255, 0.5) !important;
-        border-radius: 12px !important;
-        backdrop-filter: blur(20px) !important;
-        color: #000000 !important; /* Black text */
-        font-weight: 500 !important;
-    }
-    section[data-testid="stSidebar"] .stTextInput>div>div>input::placeholder {
-        color: rgba(0, 0, 0, 0.6) !important;
-    }
+# Apply CSS
+load_css()
 
-    /* Selectbox */
-    .stSelectbox div[data-baseweb="select"] > div {
-        background-color: rgba(255, 255, 255, 0.2) !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        border-radius: 12px !important;
-        backdrop-filter: blur(20px) !important;
-        color: white !important;
-    }
-    .stSelectbox div[data-baseweb="select"] span {
-        color: white !important;
-    }
-    /* Dropdown options */
-    ul[data-baseweb="menu"] li {
-        color: #000000 !important;
-        background-color: rgba(255, 255, 255, 0.95) !important;
-    }
-    
-    /* Buttons - Liquid & Readable */
-    .stButton button, .stDownloadButton button {
-        background: rgba(255, 255, 255, 0.25);
-        color: #000000 !important; /* Black text for better visibility */
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 12px;
-        height: 45px;
-        font-weight: 600;
-        backdrop-filter: blur(10px);
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .stButton button:hover, .stDownloadButton button:hover {
-        background: rgba(255, 255, 255, 0.4);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        border-color: rgba(255, 255, 255, 0.6);
-        color: #000000 !important;
-    }
-    /* Primary Button */
-    .stButton button[kind="primary"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
-    }
 
-    /* Expander */
-    .streamlit-expanderHeader, details > summary {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        border-radius: 12px;
-        color: white !important;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .streamlit-expanderHeader p, details > summary p {
-        color: white !important;
-        font-weight: 600;
-    }
-    .streamlit-expanderHeader:hover, details > summary:hover {
-        background-color: rgba(255, 255, 255, 0.15) !important;
-        color: white !important;
-    }
-    .streamlit-expanderContent {
-        background-color: rgba(0, 0, 0, 0.1) !important;
-        border-radius: 0 0 12px 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-top: none;
-        color: white !important;
-    }
-    
-    /* Alerts & Info */
-    .stAlert {
-        background-color: rgba(255, 255, 255, 0.9);
-        color: #000000 !important;
-        border-radius: 12px;
-    }
-    .stAlert > div {
-        color: #000000 !important;
-    }
-    .stAlert p {
-        color: #000000 !important;
-    }
-    
-    /* JSON Output */
-    .stJson {
-        background-color: rgba(0, 0, 0, 0.2);
-        border-radius: 16px;
-        padding: 20px;
-        backdrop-filter: blur(20px);
-        color: white !important;
-    }
-    
-    /* File Uploader */
-    section[data-testid="stFileUploader"] {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 16px;
-        padding: 20px;
-        backdrop-filter: blur(20px);
-        border: 2px dashed rgba(255, 255, 255, 0.3);
-    }
-    section[data-testid="stFileUploader"] div {
-        color: white !important;
-    }
-    section[data-testid="stFileUploader"] small {
-        color: rgba(255, 255, 255, 0.8) !important;
-    }
-
-    /* Headers */
-    h1, h2, h3, h4, h5, h6 {
-        color: white !important;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    /* Dividers */
-    hr {
-        border-color: rgba(255, 255, 255, 0.2);
-    }
-    
-    /* Checkbox */
-    .stCheckbox label span {
-        color: white !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Initialize Session State with Improved Defaults
+# Initialize Session State with Templates
 if 'templates' not in st.session_state:
-    # Common fields used in both templates
-    common_fields = [
-        FieldDefinition(
-            name="is_ai_generated", 
-            data_type=FieldType.BOOLEAN, 
-            description="Is this document AI-generated? Look for lack of specific details, generic fillers, or 'perfect' but empty language. Do NOT assume human authorship just because it looks professional.", 
-            length=FieldLength.SHORT,
-            include_reasoning=True
-        ),
-        FieldDefinition(
-            name="review_cycle", 
-            data_type=FieldType.STRING, 
-            description="Review cycle. STRICTLY normalize to: 'Yearly', 'Quarterly', 'Monthly'. Do NOT output 'annually' or 'every month'.", 
-            length=FieldLength.SHORT
-        ),
-        FieldDefinition(
-            name="prepared_by", 
-            data_type=FieldType.STRING, 
-            description="Author/Owner/Department. Extract ONLY names and titles (e.g. 'Natasja Michaela Alexander, LL.M.'). STRICTLY EXCLUDE any descriptive text such as 'a civil law notary...'. Truncate after the title.", 
-            length=FieldLength.MEDIUM
-        ),
-        FieldDefinition(
-            name="company_name", 
-            data_type=FieldType.STRING, 
-            description="Company name this document is about.", 
-            length=FieldLength.SHORT
-        ),
-        FieldDefinition(
-            name="document_date", 
-            data_type=FieldType.STRING, 
-            description="Creation date. Look for 'Date:', 'Issued:', or the main document date. Format strictly 'ddmmyyyy'.", 
-            length=FieldLength.SHORT
-        ),
-    ]
+    st.session_state.templates = get_default_templates()
 
-    st.session_state.templates = {
-        "AML": common_fields + [
-            FieldDefinition(name="roles_responsibilities", data_type=FieldType.BOOLEAN, description="Is there any chapter or other mention of policy cover roles and responsibilities?", include_reasoning=True),
-            FieldDefinition(name="risk_appetite", data_type=FieldType.BOOLEAN, description="Is there a risk appetite statement / customer acceptance policy?", include_reasoning=True),
-            FieldDefinition(name="cdd", data_type=FieldType.BOOLEAN, description="Is there any chapter or mentioning of a process for customer due diligence and enhanced customer due diligence as well as ongoing due diligence?", include_reasoning=True),
-            FieldDefinition(name="customer_risk", data_type=FieldType.BOOLEAN, description="Is there any chapter or mentioning of a process for customer risk classification?", include_reasoning=True),
-            FieldDefinition(name="monitoring_reporting", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of a process for monitoring and reporting?", include_reasoning=True),
-            FieldDefinition(name="record_retention", data_type=FieldType.BOOLEAN, description="Is there any chapter or mentioning of a process for record retention and data privacy?", include_reasoning=True),
-            FieldDefinition(name="employee_due_diligence", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of a process for employee due diligence?", include_reasoning=True),
-            FieldDefinition(name="training", data_type=FieldType.BOOLEAN, description="Is the any chapter or mention of any training for employees", include_reasoning=True),
-            FieldDefinition(name="internal_reporting", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of a process for internal / management reporting?", include_reasoning=True),
-            FieldDefinition(name="internal_control", data_type=FieldType.BOOLEAN, description="Is there any chapter or mentioning of a process for internal control?", include_reasoning=True),
-            FieldDefinition(name="risk_based_approach", data_type=FieldType.BOOLEAN, description="Is there any chapter or other mention of a risk-based approach?", include_reasoning=True),
-        ],
-        "BRA": common_fields + [
-            FieldDefinition(name="customer_risk_assessment", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of the risks of their customers?", include_reasoning=True),
-            FieldDefinition(name="distribution_channel_risk", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of a risks of its distribution channels or similar?", include_reasoning=True),
-            FieldDefinition(name="geographical_risk", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of the risks of geographical factors connected to the company?", include_reasoning=True),
-            FieldDefinition(name="product_risk_assessment", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of the risks of the products and services they offer to their customers?", include_reasoning=True),
-        ],
-        "Ownership": common_fields + [
-            FieldDefinition(
-                name="ownership_graph", 
-                data_type=FieldType.OWNERSHIP_GRAPH, 
-                description=(
-                    "Extract the ownership structure as a graph. "
-                    "CRITICAL: Create a SEPARATE node object for EACH distinct entity (Person or Company) found in the chart. "
-                    "Do NOT merge a company and its owner into the same object. "
-                    "1. Identify every distinct box or name. "
-                    "2. Assign a unique ID to each. "
-                    "3. Define relationships in 'adj': if A owns B, put B's ID in A's adjacency list. "
-                    "4. IMPORTANT: If a person is labeled as 'UBO', 'Director', etc., include this in 'entityRoles' within the adjacency object linking to them. "
-                    "5. 'details' must ONLY contain info specific to that single entity. "
-                    "6. STRICTLY normalize 'type' in details to 'company' or 'individual'. Never use 'human', 'person', etc."
-                    "7. Output a flat JSON Array of these node objects."
-                ), 
-                length=FieldLength.LONG
-            )
-        ]
-    }
-
-# Inject Ownership template if missing OR if it's incorrect (e.g. has roles_responsibilities)
-# We force update it to ensure the user gets the new version
-# Re-define common fields here if needed, or just grab from AML if available
-common_fields_inject = [
-    FieldDefinition(name="is_ai_generated", data_type=FieldType.BOOLEAN, description="Is this document AI-generated? Look for lack of specific details, generic fillers, or 'perfect' but empty language. Do NOT assume human authorship just because it looks professional.", length=FieldLength.SHORT, include_reasoning=True),
-    FieldDefinition(name="review_cycle", data_type=FieldType.STRING, description="Review cycle. STRICTLY normalize to: 'Yearly', 'Quarterly', 'Monthly'. Do NOT output 'annually' or 'every month'.", length=FieldLength.SHORT),
-    FieldDefinition(name="prepared_by", data_type=FieldType.STRING, description="Author/Owner/Department. Extract ONLY names and titles (e.g. 'Natasja Michaela Alexander, LL.M.'). STRICTLY EXCLUDE any descriptive text such as 'a civil law notary...'. Truncate after the title.", length=FieldLength.MEDIUM),
-    FieldDefinition(name="company_name", data_type=FieldType.STRING, description="Company name this document is about.", length=FieldLength.SHORT),
-    FieldDefinition(name="document_date", data_type=FieldType.STRING, description="Creation date. Look for 'Date:', 'Issued:', or the main document date. Format strictly 'ddmmyyyy'.", length=FieldLength.SHORT),
-]
-
-st.session_state.templates["Ownership"] = common_fields_inject + [
-    FieldDefinition(
-        name="ownership_graph", 
-        data_type=FieldType.OWNERSHIP_GRAPH, 
-        description=(
-            "Extract the ownership structure as a graph. "
-            "CRITICAL: Create a SEPARATE node object for EACH distinct entity (Person or Company) found in the chart. "
-            "Do NOT merge a company and its owner into the same object. "
-            "1. Identify every distinct box or name. "
-            "2. Assign a unique ID to each. "
-            "3. Define relationships in 'adj': if A owns B, put B's ID in A's adjacency list. "
-            "4. IMPORTANT: If a person is labeled as 'UBO', 'Director', etc., include this in 'entityRoles' within the adjacency object linking to them. "
-            "5. 'details' must ONLY contain info specific to that single entity. "
-            "6. STRICTLY normalize 'type' in details to 'company' or 'individual'. Never use 'human', 'person', etc."
-            "7. Output a flat JSON Array of these node objects."
-        ), 
-        length=FieldLength.LONG
-    )
-]
+# Ensure Ownership template is always up-to-date
+# (handles stale session state from previous versions)
+st.session_state.templates["Ownership"] = list(OWNERSHIP_FIELDS)
 
 if 'selected_template' not in st.session_state:
     st.session_state.selected_template = "AML"
@@ -322,26 +51,23 @@ if 'extraction_result' not in st.session_state:
     st.session_state.extraction_result = None
 
 # Force reload fields if we are on Ownership template but the fields don't match the new definition
-# (e.g. if the user has a stale session state where ownership_graph was a boolean or missing)
 if st.session_state.selected_template == "Ownership":
     current_field_names = [f.name for f in st.session_state.fields]
-    # Check if ownership_graph is missing OR if it exists but has the wrong type
     needs_reload = "ownership_graph" not in current_field_names
     
     if not needs_reload:
-        # Check type
-        for f in st.session_state.fields:
-            # Use .value if available (Enum), else use string directly
-            current_val = f.data_type.value if hasattr(f.data_type, 'value') else str(f.data_type)
-            if f.name == "ownership_graph" and current_val != FieldType.OWNERSHIP_GRAPH.value:
-                print(f"DEBUG: Mismatch found! Field: {f.name}, val: {current_val}, expected: {FieldType.OWNERSHIP_GRAPH.value}")
-                needs_reload = True
-                break
+        # Check if ownership_graph field has correct type using generator
+        ownership_field = next(
+            (f for f in st.session_state.fields if f.name == "ownership_graph"), 
+            None
+        )
+        if ownership_field and ownership_field.data_type != FieldType.OWNERSHIP_GRAPH:
+            needs_reload = True
     
     if needs_reload:
         st.session_state.fields = list(st.session_state.templates["Ownership"])
         st.session_state.original_template_fields = list(st.session_state.templates["Ownership"])
-        # No rerun needed; effective immediately for subsequent rendering
+
 
 def load_template():
     """Load fields from the selected template."""
@@ -350,6 +76,7 @@ def load_template():
     st.session_state.fields = list(st.session_state.templates[template_name])
     # Update original state
     st.session_state.original_template_fields = list(st.session_state.templates[template_name])
+
 
 def add_field():
     if st.session_state.new_field_name and st.session_state.new_field_desc:
@@ -365,6 +92,7 @@ def add_field():
         st.session_state.new_field_name = ""
         st.session_state.new_field_desc = ""
         st.session_state.new_field_reasoning = False
+
 
 # Sidebar
 with st.sidebar:
@@ -432,10 +160,6 @@ with st.sidebar:
         for i, field in enumerate(st.session_state.fields):
             # Use Expander for editing
             with st.expander(f"{field.name} ({field.data_type.value})", expanded=False):
-                # We use key=f"field_{i}_name" etc. to bind inputs.
-                # However, Streamlit widgets update state on change.
-                # We need to manually update the object in the list.
-                
                 new_name = st.text_input("Name", value=field.name, key=f"edit_name_{i}")
                 new_desc = st.text_area("Description", value=field.description, key=f"edit_desc_{i}", height=100)
                 
@@ -454,7 +178,6 @@ with st.sidebar:
                 new_reasoning = st.checkbox("Include Reasoning", value=field.include_reasoning, key=f"edit_reason_{i}")
 
                 # Update the field object in session state if changed
-                # Note: This runs on every rerun.
                 updated_field = FieldDefinition(
                     name=new_name,
                     description=new_desc,
@@ -479,9 +202,9 @@ with st.sidebar:
             if has_changes:
                 if st.button("💾 Save Changes", use_container_width=True):
                     st.session_state.templates[st.session_state.selected_template] = list(st.session_state.fields)
-                    st.session_state.original_template_fields = list(st.session_state.fields) # Update original
+                    st.session_state.original_template_fields = list(st.session_state.fields)
                     st.success("Saved!")
-                    st.rerun() # Rerun to update state immediately
+                    st.rerun()
             else:
                 st.button("💾 Saved", disabled=True, use_container_width=True)
                 
@@ -504,7 +227,6 @@ st.markdown("### Upload & Extract")
 uploaded_file = st.file_uploader("Drop your document here", type=['png', 'jpg', 'jpeg', 'pdf'], key="main_file_uploader")
 
 if uploaded_file:
-    print(f"DEBUG: File uploaded: {uploaded_file.name}")
     col1, col2 = st.columns(2)
     
     # Display Document
@@ -562,7 +284,7 @@ if uploaded_file:
                         
                         result = processor.extract_data(
                             file_bytes_list=img_bytes_list,
-                            file_type='png', # We convert everything to PNG bytes
+                            file_type='png',  # We convert everything to PNG bytes
                             fields=st.session_state.fields
                         )
                         
@@ -575,8 +297,8 @@ if uploaded_file:
         if st.session_state.extraction_result:
             st.json(st.session_state.extraction_result)
             
-            # Download button
-            json_str = pd.Series(st.session_state.extraction_result).to_json(indent=2)
+            # Download button - using stdlib json instead of pandas
+            json_str = json.dumps(st.session_state.extraction_result, indent=2)
             st.download_button(
                 label="Download JSON",
                 data=json_str,
