@@ -53,52 +53,52 @@ st.markdown("""
 
     /* Input Fields - Translucent & Black Text */
     .stTextInput>div>div>input {
-        background-color: rgba(255, 255, 255, 0.25);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 16px;
+        background-color: rgba(255, 255, 255, 0.9); /* Increased opacity for readability */
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 12px;
         backdrop-filter: blur(20px);
         color: #000000 !important;
+        font-weight: 500;
     }
     .stTextInput>div>div>input::placeholder {
-        color: rgba(0, 0, 0, 0.6);
+        color: rgba(0, 0, 0, 0.5);
     }
     
-    /* Sidebar Text Inputs - More Translucent Like Dropdowns */
+    /* Sidebar Text Inputs */
     section[data-testid="stSidebar"] .stTextInput>div>div>input {
-        background-color: rgba(255, 255, 255, 0.15) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 16px !important;
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 12px !important;
         backdrop-filter: blur(20px) !important;
-        color: #000000 !important;
+        color: #ffffff !important; /* White text on sidebar for better contrast against dark/blur */
     }
     section[data-testid="stSidebar"] .stTextInput>div>div>input::placeholder {
-        color: rgba(0, 0, 0, 0.6) !important;
+        color: rgba(255, 255, 255, 0.6) !important;
     }
 
-    /* Selectbox - Fix Contrast */
+    /* Selectbox */
     .stSelectbox div[data-baseweb="select"] > div {
-        background-color: rgba(255, 255, 255, 0.15) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 16px !important;
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 12px !important;
         backdrop-filter: blur(20px) !important;
-        color: #000000 !important;
+        color: white !important;
     }
-    /* Fix the text inside the selectbox */
     .stSelectbox div[data-baseweb="select"] span {
-        color: #000000 !important;
+        color: white !important;
     }
-    /* Fix dropdown options */
+    /* Dropdown options */
     ul[data-baseweb="menu"] li {
         color: #000000 !important;
-        background-color: rgba(255, 255, 255, 0.9) !important;
+        background-color: rgba(255, 255, 255, 0.95) !important;
     }
     
     /* Buttons - Liquid & Readable */
     .stButton>button, .stDownloadButton>button {
-        background: rgba(255, 255, 255, 0.25);
-        color: #000000 !important;
+        background: rgba(255, 255, 255, 0.2);
+        color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 16px;
+        border-radius: 12px;
         height: 45px;
         font-weight: 600;
         backdrop-filter: blur(10px);
@@ -110,34 +110,43 @@ st.markdown("""
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         border-color: rgba(255, 255, 255, 0.6);
-        color: #000000 !important;
+        color: white !important;
+    }
+    /* Primary Button */
+    .stButton>button[kind="primary"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
     }
 
-    /* Expander - High Contrast Glass (Fixed for Expanded State) */
+    /* Expander */
     .streamlit-expanderHeader, details > summary {
-        background-color: rgba(255, 255, 255, 0.15) !important;
+        background-color: rgba(255, 255, 255, 0.1) !important;
         border-radius: 12px;
-        color: #000000 !important;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
     .streamlit-expanderHeader p, details > summary p {
-        color: #000000 !important;
+        color: white !important;
         font-weight: 600;
     }
     .streamlit-expanderHeader:hover, details > summary:hover {
-        color: #000000 !important;
+        background-color: rgba(255, 255, 255, 0.15) !important;
+        color: white !important;
     }
     .streamlit-expanderContent {
-        background-color: rgba(255, 255, 255, 0.05) !important;
+        background-color: rgba(0, 0, 0, 0.1) !important;
         border-radius: 0 0 12px 12px;
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-top: none;
-        color: #000000 !important;
+        color: white !important;
     }
     
-    /* Alerts & Info - Readable Text */
+    /* Alerts & Info */
     .stAlert {
+        background-color: rgba(255, 255, 255, 0.9);
         color: #000000 !important;
+        border-radius: 12px;
     }
     .stAlert > div {
         color: #000000 !important;
@@ -148,78 +157,113 @@ st.markdown("""
     
     /* JSON Output */
     .stJson {
-        background-color: rgba(255, 255, 255, 0.25);
+        background-color: rgba(0, 0, 0, 0.2);
         border-radius: 16px;
         padding: 20px;
         backdrop-filter: blur(20px);
-        color: #000000 !important;
+        color: white !important;
     }
     
-    /* File Uploader - Liquid Glass */
+    /* File Uploader */
     section[data-testid="stFileUploader"] {
-        background-color: rgba(255, 255, 255, 0.25);
+        background-color: rgba(255, 255, 255, 0.1);
         border-radius: 16px;
         padding: 20px;
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 2px dashed rgba(255, 255, 255, 0.3);
     }
     section[data-testid="stFileUploader"] div {
-        color: #000000 !important;
+        color: white !important;
     }
     section[data-testid="stFileUploader"] small {
-        color: #000000 !important;
+        color: rgba(255, 255, 255, 0.8) !important;
     }
 
     /* Headers */
-    h1, h2, h3 {
+    h1, h2, h3, h4, h5, h6 {
         color: white !important;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        text-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     
     /* Dividers */
     hr {
         border-color: rgba(255, 255, 255, 0.2);
     }
+    
+    /* Checkbox */
+    .stCheckbox label span {
+        color: white !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # Initialize Session State with Improved Defaults
+if 'templates' not in st.session_state:
+    st.session_state.templates = {
+        "AML": [
+            FieldDefinition(
+                name="is_ai_generated", 
+                data_type=FieldType.BOOLEAN, 
+                description="Analyze language style, punctuation, formatting to determine if AI-generated.", 
+                length=FieldLength.SHORT,
+                include_reasoning=True
+            ),
+            FieldDefinition(
+                name="review_cycle", 
+                data_type=FieldType.STRING, 
+                description="Review cycle. STRICTLY normalize to: 'Yearly', 'Quarterly', 'Monthly'. Do NOT output 'annually' or 'every month'.", 
+                length=FieldLength.SHORT
+            ),
+            FieldDefinition(
+                name="prepared_by", 
+                data_type=FieldType.STRING, 
+                description="Author/Owner/Department. If multiple, list the most relevant ones (up to 15 words).", 
+                length=FieldLength.MEDIUM
+            ),
+            FieldDefinition(
+                name="company_name", 
+                data_type=FieldType.STRING, 
+                description="Company name this document is about.", 
+                length=FieldLength.SHORT
+            ),
+            FieldDefinition(
+                name="document_date", 
+                data_type=FieldType.STRING, 
+                description="Creation date. Look for 'Date:', 'Issued:', or the main document date. Format strictly 'ddmmyyyy'.", 
+                length=FieldLength.SHORT
+            ),
+        ]
+    }
+
+if 'selected_template' not in st.session_state:
+    st.session_state.selected_template = "AML"
+
 if 'fields' not in st.session_state:
-    st.session_state.fields = [
-        FieldDefinition(
-            name="is_ai_generated", 
-            data_type=FieldType.BOOLEAN, 
-            description="Analyze language style, punctuation, formatting to determine if AI-generated.", 
-            length=FieldLength.SHORT
-        ),
-        FieldDefinition(
-            name="review_cycle", 
-            data_type=FieldType.STRING, 
-            description="Review cycle. STRICTLY normalize to: 'Yearly', 'Quarterly', 'Monthly'. Do NOT output 'annually' or 'every month'.", 
-            length=FieldLength.SHORT
-        ),
-        FieldDefinition(
-            name="prepared_by", 
-            data_type=FieldType.STRING, 
-            description="Author/Owner/Department. If multiple, list the most relevant ones (up to 15 words).", 
-            length=FieldLength.MEDIUM
-        ),
-        FieldDefinition(
-            name="company_name", 
-            data_type=FieldType.STRING, 
-            description="Company name this document is about.", 
-            length=FieldLength.SHORT
-        ),
-        FieldDefinition(
-            name="document_date", 
-            data_type=FieldType.STRING, 
-            description="Creation date. Look for 'Date:', 'Issued:', or the main document date. Format strictly 'ddmmyyyy'.", 
-            length=FieldLength.SHORT
-        ),
-    ]
+    # Deep copy to avoid reference issues
+    st.session_state.fields = list(st.session_state.templates["AML"])
 
 if 'extraction_result' not in st.session_state:
     st.session_state.extraction_result = None
+
+def load_template():
+    """Load fields from the selected template."""
+    template_name = st.session_state.template_selector
+    st.session_state.selected_template = template_name
+    st.session_state.fields = list(st.session_state.templates[template_name])
+
+def save_template():
+    """Save current fields as a new template."""
+    new_name = st.session_state.new_template_name
+    if new_name and new_name not in st.session_state.templates:
+        st.session_state.templates[new_name] = list(st.session_state.fields)
+        st.session_state.selected_template = new_name
+        st.success(f"Template '{new_name}' saved!")
+        # Force reload of selector
+        st.rerun()
+    elif new_name in st.session_state.templates:
+        st.error("Template name already exists.")
+    else:
+        st.error("Please enter a template name.")
 
 def add_field():
     if st.session_state.new_field_name and st.session_state.new_field_desc:
@@ -227,17 +271,41 @@ def add_field():
             name=st.session_state.new_field_name,
             description=st.session_state.new_field_desc,
             data_type=st.session_state.new_field_type,
-            length=st.session_state.new_field_length
+            length=st.session_state.new_field_length,
+            include_reasoning=st.session_state.new_field_reasoning
         )
         st.session_state.fields.append(new_field)
         # Clear inputs
         st.session_state.new_field_name = ""
         st.session_state.new_field_desc = ""
+        st.session_state.new_field_reasoning = False
 
 # Sidebar
 with st.sidebar:
     st.title("Spektr")
-    st.caption("v4.0 • Liquid Intelligence")
+    st.caption("v4.1 • Liquid Intelligence")
+    
+    # Template Selection
+    st.subheader("Templates")
+    template_options = list(st.session_state.templates.keys())
+    # Ensure selected_template is in options (handle deletion edge cases if we added deletion)
+    idx = 0
+    if st.session_state.selected_template in template_options:
+        idx = template_options.index(st.session_state.selected_template)
+        
+    st.selectbox(
+        "Choose Template", 
+        template_options, 
+        index=idx, 
+        key="template_selector", 
+        on_change=load_template
+    )
+    
+    with st.expander("💾 Save as Template", expanded=False):
+        st.text_input("New Template Name", key="new_template_name", placeholder="e.g., Invoices")
+        st.button("Save Template", on_click=save_template)
+
+    st.divider()
     
     with st.expander("➕ Add New Field", expanded=False):
         st.text_input("Field Name", key="new_field_name", placeholder="e.g., summary")
@@ -248,6 +316,8 @@ with st.sidebar:
             st.selectbox("Type", [t.value for t in FieldType], key="new_field_type")
         with col_len:
             st.selectbox("Length", [l.value for l in FieldLength], key="new_field_length")
+            
+        st.checkbox("Include Reasoning", key="new_field_reasoning", help="AI will explain why it extracted this value.")
             
         st.button("Add Field", on_click=add_field)
 
@@ -280,13 +350,16 @@ with st.sidebar:
                     curr_len_idx = len_opts.index(field.length.value)
                     new_len_str = st.selectbox("Length", len_opts, index=curr_len_idx, key=f"edit_len_{i}")
 
+                new_reasoning = st.checkbox("Include Reasoning", value=field.include_reasoning, key=f"edit_reason_{i}")
+
                 # Update the field object in session state if changed
                 # Note: This runs on every rerun.
                 updated_field = FieldDefinition(
                     name=new_name,
                     description=new_desc,
                     data_type=FieldType(new_type_str),
-                    length=FieldLength(new_len_str)
+                    length=FieldLength(new_len_str),
+                    include_reasoning=new_reasoning
                 )
                 st.session_state.fields[i] = updated_field
 

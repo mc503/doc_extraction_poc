@@ -47,6 +47,7 @@ class FieldDefinition(BaseModel):
     description: str
     data_type: FieldType
     length: FieldLength = FieldLength.AUTO
+    include_reasoning: bool = False
 
 class DynamicSchemaGenerator:
     @staticmethod
@@ -58,26 +59,39 @@ class DynamicSchemaGenerator:
         
         for field in fields:
             if field.data_type == FieldType.STRING:
-                field_type = str
+                base_type = str
             elif field.data_type == FieldType.INTEGER:
-                field_type = int
+                base_type = int
             elif field.data_type == FieldType.LIST_STRINGS:
-                field_type = List[str]
+                base_type = List[str]
             elif field.data_type == FieldType.BOOLEAN:
-                field_type = bool
+                base_type = bool
             else:
-                field_type = str # Default
+                base_type = str # Default
             
             # Append length instruction if not Auto
             description = field.description
             if field.length != FieldLength.AUTO:
                 description += f" [Output Length: {field.length.value}]"
 
-            # Create the field definition tuple: (type, Field(description=...))
-            field_definitions[field.name] = (
-                field_type, 
-                Field(description=description)
-            )
+            if field.include_reasoning:
+                # Create a nested model for this field
+                nested_model_name = f"{field.name.capitalize()}WithReasoning"
+                nested_fields = {
+                    "value": (base_type, Field(description="The extracted value.")),
+                    "reason": (str, Field(description="A 1-2 sentence explanation of why this value was extracted."))
+                }
+                field_type = create_model(nested_model_name, **nested_fields)
+                field_definitions[field.name] = (
+                    field_type,
+                    Field(description=description)
+                )
+            else:
+                # Standard field
+                field_definitions[field.name] = (
+                    base_type, 
+                    Field(description=description)
+                )
             
         return create_model('ExtractedData', **field_definitions)
 
