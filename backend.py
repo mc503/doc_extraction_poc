@@ -52,36 +52,23 @@ class FieldDefinition(BaseModel):
 
 # --- Ownership Models ---
 class OwnershipShareholding(BaseModel):
-    role: str
-    percentage: str
+    percentage: float
 
 class OwnershipAdjacency(BaseModel):
-    spektrId: str
-    directOrIndirect: str
+    id: str # Reference to the child's ID
     shareholding: OwnershipShareholding
-    entityPositions: List[str]
-    entityRoles: List[str]
-    id: Optional[str] = None
-    signatorySnippets: Optional[List[str]] = []
+    type: str = "child"
 
 class OwnershipDetails(BaseModel):
     name: str
-    customer_type: str # company/individual
-    ownership: float
-    isBeneficiary: bool
-    company_name: Optional[str] = None
-    full_name: Optional[str] = None
-    category: Optional[str] = None
-    position: Optional[str] = None
+    type: str # company OR individual
+    ownership_percentage: Optional[float] = None
     
     class Config:
         extra = "allow"
 
 class OwnershipNode(BaseModel):
-    spektrId: str
-    status: str = "pending"
-    updatedAt: Optional[int] = None
-    createdAt: Optional[int] = None
+    id: str
     details: OwnershipDetails
     adj: List[OwnershipAdjacency]
 
