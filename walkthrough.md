@@ -120,11 +120,10 @@ This will automatically open the application in your default web browser (usuall
 To verify the changes yourself:
 1.  **Run the App**: `streamlit run app.py`
 2.  **Check Templates**: Confirm "AML" is selected and fields are populated.
-3.  **Test Reasoning**:
-    -   Add a new field (e.g., "Risk Level").
-    -   Check "Include Reasoning".
-    -   Upload a document and run extraction.
-    -   Verify the JSON output includes a "reason" for that field.
+3.  **Reasoning V2 (Generalized)**:
+    -   Run extraction on a field like "is_ai_generated" or create a new one like "authenticity_check".
+    -   Verify that the reasoning does *not* cite "professional formatting" or "legal language" as a reason for human authorship.
+    -   It should focus on specific details, inconsistencies, or lack thereof.
 4.  **Save Template**:
     -   Add some fields.
     -   Enter a name in "Save as Template" and click Save.

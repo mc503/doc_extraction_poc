@@ -150,11 +150,13 @@ class DocumentProcessor:
                         "If the image is rotated or blurry, try to detect and correct orientation mentally before extracting. "
                         "Return the data strictly in the requested JSON format."
                         "Do not make up data that is not in the document."
-                        "For fields requiring reasoning (especially 'is_ai_generated'), look for specific artifacts: "
-                        "hallucinated details, perfect but empty grammar, lack of specific real-world context, "
+                        "For any fields asking to assess authorship, authenticity, or AI generation: "
+                        "Look for specific artifacts: hallucinated details, perfect but empty grammar, lack of specific real-world context, "
                         "inconsistent formatting typical of LLM outputs, or generic 'lorem ipsum' style content. "
-                        "Do NOT use professional formatting, legal language, or structure as evidence of human authorship, "
-                        "as AI can generate these perfectly. Focus on logical inconsistencies or lack of verifiable facts. "
+                        "CRITICAL: Do NOT cite 'professional formatting', 'legal language', 'detailed structure', or 'compliance terminology' "
+                        "as evidence of human authorship. AI models (like GPT-4) generate highly professional, structured, and legalistic text. "
+                        "To conclude a document is human-written, look for: specific nuances, inconsistencies, human errors, or deep context "
+                        "that an AI is unlikely to know. If the document is simply 'professional', acknowledge that it could be AI-generated."
                         "Provide specific evidence in your reasoning."
                     )
                 },

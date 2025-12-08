@@ -205,7 +205,7 @@ if 'templates' not in st.session_state:
         FieldDefinition(
             name="is_ai_generated", 
             data_type=FieldType.BOOLEAN, 
-            description="Analyze language style, punctuation, formatting to determine if AI-generated.", 
+            description="Is this document AI-generated? Look for lack of specific details, generic fillers, or 'perfect' but empty language. Do NOT assume human authorship just because it looks professional.", 
             length=FieldLength.SHORT,
             include_reasoning=True
         ),
