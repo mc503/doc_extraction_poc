@@ -66,14 +66,15 @@ st.markdown("""
     
     /* Sidebar Text Inputs */
     section[data-testid="stSidebar"] .stTextInput>div>div>input {
-        background-color: rgba(255, 255, 255, 0.2) !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        background-color: rgba(255, 255, 255, 0.8) !important; /* High opacity for readability */
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
         border-radius: 12px !important;
         backdrop-filter: blur(20px) !important;
-        color: #ffffff !important; /* White text on sidebar for better contrast against dark/blur */
+        color: #000000 !important; /* Black text */
+        font-weight: 500 !important;
     }
     section[data-testid="stSidebar"] .stTextInput>div>div>input::placeholder {
-        color: rgba(255, 255, 255, 0.6) !important;
+        color: rgba(0, 0, 0, 0.6) !important;
     }
 
     /* Selectbox */
@@ -251,20 +252,6 @@ def load_template():
     st.session_state.selected_template = template_name
     st.session_state.fields = list(st.session_state.templates[template_name])
 
-def save_template():
-    """Save current fields as a new template."""
-    new_name = st.session_state.new_template_name
-    if new_name and new_name not in st.session_state.templates:
-        st.session_state.templates[new_name] = list(st.session_state.fields)
-        st.session_state.selected_template = new_name
-        st.success(f"Template '{new_name}' saved!")
-        # Force reload of selector
-        st.rerun()
-    elif new_name in st.session_state.templates:
-        st.error("Template name already exists.")
-    else:
-        st.error("Please enter a template name.")
-
 def add_field():
     if st.session_state.new_field_name and st.session_state.new_field_desc:
         new_field = FieldDefinition(
@@ -283,17 +270,19 @@ def add_field():
 # Sidebar
 with st.sidebar:
     st.title("Spektr")
-    st.caption("v4.1 • Liquid Intelligence")
+    st.caption("v4.2 • Liquid Intelligence")
     
     # Template Selection
     st.subheader("Templates")
+    
+    # Ensure selected_template is valid
     template_options = list(st.session_state.templates.keys())
-    # Ensure selected_template is in options (handle deletion edge cases if we added deletion)
-    idx = 0
-    if st.session_state.selected_template in template_options:
-        idx = template_options.index(st.session_state.selected_template)
+    if st.session_state.selected_template not in template_options:
+        st.session_state.selected_template = template_options[0] if template_options else "AML"
         
-    st.selectbox(
+    idx = template_options.index(st.session_state.selected_template)
+    
+    selected = st.selectbox(
         "Choose Template", 
         template_options, 
         index=idx, 
@@ -301,9 +290,37 @@ with st.sidebar:
         on_change=load_template
     )
     
-    with st.expander("💾 Save as Template", expanded=False):
-        st.text_input("New Template Name", key="new_template_name", placeholder="e.g., Invoices")
-        st.button("Save Template", on_click=save_template)
+    # Template Actions
+    col_t1, col_t2 = st.columns(2)
+    
+    with col_t1:
+        if st.button("💾 Save Changes", use_container_width=True, help="Update the current template with active fields"):
+            st.session_state.templates[st.session_state.selected_template] = list(st.session_state.fields)
+            st.success("Saved!")
+            
+    with col_t2:
+        if st.button("🗑️ Delete", use_container_width=True, help="Delete the current template"):
+            if len(st.session_state.templates) > 1:
+                del st.session_state.templates[st.session_state.selected_template]
+                # Reset to first available
+                st.session_state.selected_template = list(st.session_state.templates.keys())[0]
+                st.session_state.fields = list(st.session_state.templates[st.session_state.selected_template])
+                st.rerun()
+            else:
+                st.error("Cannot delete the last template.")
+
+    with st.expander("Save as New Template", expanded=False):
+        new_template_name = st.text_input("New Name", placeholder="e.g., Invoices")
+        if st.button("Create Template"):
+            if new_template_name and new_template_name not in st.session_state.templates:
+                st.session_state.templates[new_template_name] = list(st.session_state.fields)
+                st.session_state.selected_template = new_template_name
+                st.success(f"Created '{new_template_name}'!")
+                st.rerun()
+            elif new_template_name in st.session_state.templates:
+                st.error("Name exists.")
+            else:
+                st.error("Enter a name.")
 
     st.divider()
     

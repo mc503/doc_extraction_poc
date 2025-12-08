@@ -150,6 +150,10 @@ class DocumentProcessor:
                         "If the image is rotated or blurry, try to detect and correct orientation mentally before extracting. "
                         "Return the data strictly in the requested JSON format."
                         "Do not make up data that is not in the document."
+                        "For fields requiring reasoning (especially 'is_ai_generated'), look for specific artifacts: "
+                        "hallucinated details, perfect but empty grammar, lack of specific real-world context, "
+                        "inconsistent formatting typical of LLM outputs, or generic 'lorem ipsum' style content. "
+                        "Provide specific evidence in your reasoning."
                     )
                 },
                 {

@@ -116,6 +116,29 @@ python3 -m streamlit run app.py
 
 This will automatically open the application in your default web browser (usually at `http://localhost:8501`).
 
+### Manual Verification Steps
+To verify the changes yourself:
+1.  **Run the App**: `streamlit run app.py`
+2.  **Check Templates**: Confirm "AML" is selected and fields are populated.
+3.  **Test Reasoning**:
+    -   Add a new field (e.g., "Risk Level").
+    -   Check "Include Reasoning".
+    -   Upload a document and run extraction.
+    -   Verify the JSON output includes a "reason" for that field.
+4.  **Save Template**:
+    -   Add some fields.
+    -   Enter a name in "Save as Template" and click Save.
+    -   Refresh or switch templates to verify persistence (in session).
+
+### Fix Verification (v4.2)
+1.  **Sidebar Visibility**: Check that input text in the sidebar is now black and clearly visible against the background.
+2.  **Template Management**:
+    -   **Save Changes**: Modify the "AML" template (add a field), click "Save Changes", switch to another template and back. The change should persist.
+    -   **Delete**: Create a dummy template, select it, and click "Delete". It should disappear.
+    -   **No Errors**: Verify that saving/deleting does not trigger "Calling st.rerun() within a callback" errors.
+3.  **Reasoning Logic**:
+    -   The AI is now instructed to look for specific artifacts (hallucinations, empty grammar) when determining if a document is AI-generated.
+
 ## 5. Using Spektr
 
 1.  **Upload a Document**: Drag and drop a PDF or Image (PNG/JPG) into the "Upload & Extract" area.
