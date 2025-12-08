@@ -97,7 +97,7 @@ st.markdown("""
     /* Buttons - Liquid & Readable */
     .stButton>button, .stDownloadButton>button {
         background: rgba(255, 255, 255, 0.2);
-        color: white !important;
+        color: #ffffff !important; /* White text */
         border: 1px solid rgba(255, 255, 255, 0.4);
         border-radius: 12px;
         height: 45px;
@@ -105,13 +105,14 @@ st.markdown("""
         backdrop-filter: blur(10px);
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2); /* Add shadow to make white text pop on light backgrounds */
     }
     .stButton>button:hover, .stDownloadButton>button:hover {
         background: rgba(255, 255, 255, 0.4);
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         border-color: rgba(255, 255, 255, 0.6);
-        color: white !important;
+        color: #ffffff !important;
     }
     /* Primary Button */
     .stButton>button[kind="primary"] {
@@ -243,6 +244,10 @@ if 'fields' not in st.session_state:
     # Deep copy to avoid reference issues
     st.session_state.fields = list(st.session_state.templates["AML"])
 
+# Track original state for change detection
+if 'original_template_fields' not in st.session_state:
+    st.session_state.original_template_fields = list(st.session_state.templates["AML"])
+
 if 'extraction_result' not in st.session_state:
     st.session_state.extraction_result = None
 
@@ -251,6 +256,8 @@ def load_template():
     template_name = st.session_state.template_selector
     st.session_state.selected_template = template_name
     st.session_state.fields = list(st.session_state.templates[template_name])
+    # Update original state
+    st.session_state.original_template_fields = list(st.session_state.templates[template_name])
 
 def add_field():
     if st.session_state.new_field_name and st.session_state.new_field_desc:
@@ -270,7 +277,7 @@ def add_field():
 # Sidebar
 with st.sidebar:
     st.title("Spektr")
-    st.caption("v4.2 • Liquid Intelligence")
+    st.caption("v4.3 • Liquid Intelligence")
     
     # Template Selection
     st.subheader("Templates")
@@ -293,10 +300,17 @@ with st.sidebar:
     # Template Actions
     col_t1, col_t2 = st.columns(2)
     
+    # Check for changes
+    has_changes = st.session_state.fields != st.session_state.original_template_fields
+    
     with col_t1:
-        if st.button("💾 Save Changes", use_container_width=True, help="Update the current template with active fields"):
-            st.session_state.templates[st.session_state.selected_template] = list(st.session_state.fields)
-            st.success("Saved!")
+        if has_changes:
+            if st.button("💾 Save Changes", use_container_width=True, help="Update the current template with active fields"):
+                st.session_state.templates[st.session_state.selected_template] = list(st.session_state.fields)
+                st.session_state.original_template_fields = list(st.session_state.fields) # Update original
+                st.success("Saved!")
+        else:
+            st.button("💾 Saved", disabled=True, use_container_width=True)
             
     with col_t2:
         if st.button("🗑️ Delete", use_container_width=True, help="Delete the current template"):
@@ -305,6 +319,7 @@ with st.sidebar:
                 # Reset to first available
                 st.session_state.selected_template = list(st.session_state.templates.keys())[0]
                 st.session_state.fields = list(st.session_state.templates[st.session_state.selected_template])
+                st.session_state.original_template_fields = list(st.session_state.fields)
                 st.rerun()
             else:
                 st.error("Cannot delete the last template.")
@@ -315,6 +330,7 @@ with st.sidebar:
             if new_template_name and new_template_name not in st.session_state.templates:
                 st.session_state.templates[new_template_name] = list(st.session_state.fields)
                 st.session_state.selected_template = new_template_name
+                st.session_state.original_template_fields = list(st.session_state.fields)
                 st.success(f"Created '{new_template_name}'!")
                 st.rerun()
             elif new_template_name in st.session_state.templates:
@@ -326,7 +342,7 @@ with st.sidebar:
     
     with st.expander("➕ Add New Field", expanded=False):
         st.text_input("Field Name", key="new_field_name", placeholder="e.g., summary")
-        st.text_input("Description", key="new_field_desc", placeholder="e.g., Brief summary of the content")
+        st.text_area("Description", key="new_field_desc", placeholder="e.g., Brief summary of the content", height=100)
         
         col_type, col_len = st.columns(2)
         with col_type:
@@ -353,7 +369,7 @@ with st.sidebar:
                 # We need to manually update the object in the list.
                 
                 new_name = st.text_input("Name", value=field.name, key=f"edit_name_{i}")
-                new_desc = st.text_input("Description", value=field.description, key=f"edit_desc_{i}")
+                new_desc = st.text_area("Description", value=field.description, key=f"edit_desc_{i}", height=100)
                 
                 col_e1, col_e2 = st.columns(2)
                 with col_e1:

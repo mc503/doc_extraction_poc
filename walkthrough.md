@@ -139,6 +139,17 @@ To verify the changes yourself:
 3.  **Reasoning Logic**:
     -   The AI is now instructed to look for specific artifacts (hallucinations, empty grammar) when determining if a document is AI-generated.
 
+### Refinement Verification (v4.3)
+1.  **Conditional Save**:
+    -   Load a template. The "Save Changes" button should be disabled/hidden or show "Saved".
+    -   Modify a field. The "Save Changes" button should become active.
+    -   Save. The button should revert to "Saved".
+2.  **Button Visibility**: Check that buttons have white text on a visible background in their default state.
+3.  **Description Field**: Verify that the description input is now a taller text area, making it easier to write detailed prompts.
+4.  **Reasoning V2**:
+    -   Run extraction.
+    -   Verify that the reasoning does *not* cite "professional formatting" as a reason for human authorship.
+
 ## 5. Using Spektr
 
 1.  **Upload a Document**: Drag and drop a PDF or Image (PNG/JPG) into the "Upload & Extract" area.
