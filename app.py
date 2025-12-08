@@ -218,7 +218,7 @@ if 'templates' not in st.session_state:
         FieldDefinition(
             name="prepared_by", 
             data_type=FieldType.STRING, 
-            description="Author/Owner/Department. If multiple, list the most relevant ones (up to 15 words).", 
+            description="Author/Owner/Department. Extract ONLY names and titles (e.g. 'Natasja Michaela Alexander, LL.M.'). STRICTLY EXCLUDE any descriptive text such as 'a civil law notary...'. Truncate after the title.", 
             length=FieldLength.MEDIUM
         ),
         FieldDefinition(
@@ -282,7 +282,7 @@ if 'templates' not in st.session_state:
 common_fields_inject = [
     FieldDefinition(name="is_ai_generated", data_type=FieldType.BOOLEAN, description="Is this document AI-generated? Look for lack of specific details, generic fillers, or 'perfect' but empty language. Do NOT assume human authorship just because it looks professional.", length=FieldLength.SHORT, include_reasoning=True),
     FieldDefinition(name="review_cycle", data_type=FieldType.STRING, description="Review cycle. STRICTLY normalize to: 'Yearly', 'Quarterly', 'Monthly'. Do NOT output 'annually' or 'every month'.", length=FieldLength.SHORT),
-    FieldDefinition(name="prepared_by", data_type=FieldType.STRING, description="Author/Owner/Department. If multiple, list the most relevant ones (up to 15 words).", length=FieldLength.MEDIUM),
+    FieldDefinition(name="prepared_by", data_type=FieldType.STRING, description="Author/Owner/Department. Extract ONLY names and titles (e.g. 'Natasja Michaela Alexander, LL.M.'). STRICTLY EXCLUDE any descriptive text such as 'a civil law notary...'. Truncate after the title.", length=FieldLength.MEDIUM),
     FieldDefinition(name="company_name", data_type=FieldType.STRING, description="Company name this document is about.", length=FieldLength.SHORT),
     FieldDefinition(name="document_date", data_type=FieldType.STRING, description="Creation date. Look for 'Date:', 'Issued:', or the main document date. Format strictly 'ddmmyyyy'.", length=FieldLength.SHORT),
 ]
