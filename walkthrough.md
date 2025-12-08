@@ -158,6 +158,9 @@ To verify the changes yourself:
 3.  **State Tracking**:
     -   **Include Reasoning**: Toggle "Include Reasoning" for an active field. The "Save Changes" button should immediately become active.
     -   **Revert Changes**: Modify a field name (Save Changes appears), then change it back to the original name. The "Save Changes" button should revert to "Saved".
+4.  **New Templates**:
+    -   **AML**: Verify it now includes fields like "roles_responsibilities", "risk_appetite", etc.
+    -   **BRA**: Verify there is a new "BRA" template in the dropdown, containing the common fields plus "customer_risk_assessment", "geographical_risk", etc.
 
 ## 5. Using Spektr
 

@@ -200,39 +200,60 @@ st.markdown("""
 
 # Initialize Session State with Improved Defaults
 if 'templates' not in st.session_state:
+    # Common fields used in both templates
+    common_fields = [
+        FieldDefinition(
+            name="is_ai_generated", 
+            data_type=FieldType.BOOLEAN, 
+            description="Analyze language style, punctuation, formatting to determine if AI-generated.", 
+            length=FieldLength.SHORT,
+            include_reasoning=True
+        ),
+        FieldDefinition(
+            name="review_cycle", 
+            data_type=FieldType.STRING, 
+            description="Review cycle. STRICTLY normalize to: 'Yearly', 'Quarterly', 'Monthly'. Do NOT output 'annually' or 'every month'.", 
+            length=FieldLength.SHORT
+        ),
+        FieldDefinition(
+            name="prepared_by", 
+            data_type=FieldType.STRING, 
+            description="Author/Owner/Department. If multiple, list the most relevant ones (up to 15 words).", 
+            length=FieldLength.MEDIUM
+        ),
+        FieldDefinition(
+            name="company_name", 
+            data_type=FieldType.STRING, 
+            description="Company name this document is about.", 
+            length=FieldLength.SHORT
+        ),
+        FieldDefinition(
+            name="document_date", 
+            data_type=FieldType.STRING, 
+            description="Creation date. Look for 'Date:', 'Issued:', or the main document date. Format strictly 'ddmmyyyy'.", 
+            length=FieldLength.SHORT
+        ),
+    ]
+
     st.session_state.templates = {
-        "AML": [
-            FieldDefinition(
-                name="is_ai_generated", 
-                data_type=FieldType.BOOLEAN, 
-                description="Analyze language style, punctuation, formatting to determine if AI-generated.", 
-                length=FieldLength.SHORT,
-                include_reasoning=True
-            ),
-            FieldDefinition(
-                name="review_cycle", 
-                data_type=FieldType.STRING, 
-                description="Review cycle. STRICTLY normalize to: 'Yearly', 'Quarterly', 'Monthly'. Do NOT output 'annually' or 'every month'.", 
-                length=FieldLength.SHORT
-            ),
-            FieldDefinition(
-                name="prepared_by", 
-                data_type=FieldType.STRING, 
-                description="Author/Owner/Department. If multiple, list the most relevant ones (up to 15 words).", 
-                length=FieldLength.MEDIUM
-            ),
-            FieldDefinition(
-                name="company_name", 
-                data_type=FieldType.STRING, 
-                description="Company name this document is about.", 
-                length=FieldLength.SHORT
-            ),
-            FieldDefinition(
-                name="document_date", 
-                data_type=FieldType.STRING, 
-                description="Creation date. Look for 'Date:', 'Issued:', or the main document date. Format strictly 'ddmmyyyy'.", 
-                length=FieldLength.SHORT
-            ),
+        "AML": common_fields + [
+            FieldDefinition(name="roles_responsibilities", data_type=FieldType.BOOLEAN, description="Is there any chapter or other mention of policy cover roles and responsibilities?", include_reasoning=True),
+            FieldDefinition(name="risk_appetite", data_type=FieldType.BOOLEAN, description="Is there a risk appetite statement / customer acceptance policy?", include_reasoning=True),
+            FieldDefinition(name="cdd", data_type=FieldType.BOOLEAN, description="Is there any chapter or mentioning of a process for customer due diligence and enhanced customer due diligence as well as ongoing due diligence?", include_reasoning=True),
+            FieldDefinition(name="customer_risk", data_type=FieldType.BOOLEAN, description="Is there any chapter or mentioning of a process for customer risk classification?", include_reasoning=True),
+            FieldDefinition(name="monitoring_reporting", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of a process for monitoring and reporting?", include_reasoning=True),
+            FieldDefinition(name="record_retention", data_type=FieldType.BOOLEAN, description="Is there any chapter or mentioning of a process for record retention and data privacy?", include_reasoning=True),
+            FieldDefinition(name="employee_due_diligence", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of a process for employee due diligence?", include_reasoning=True),
+            FieldDefinition(name="training", data_type=FieldType.BOOLEAN, description="Is the any chapter or mention of any training for employees", include_reasoning=True),
+            FieldDefinition(name="internal_reporting", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of a process for internal / management reporting?", include_reasoning=True),
+            FieldDefinition(name="internal_control", data_type=FieldType.BOOLEAN, description="Is there any chapter or mentioning of a process for internal control?", include_reasoning=True),
+            FieldDefinition(name="risk_based_approach", data_type=FieldType.BOOLEAN, description="Is there any chapter or other mention of a risk-based approach?", include_reasoning=True),
+        ],
+        "BRA": common_fields + [
+            FieldDefinition(name="customer_risk_assessment", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of the risks of their customers?", include_reasoning=True),
+            FieldDefinition(name="distribution_channel_risk", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of a risks of its distribution channels or similar?", include_reasoning=True),
+            FieldDefinition(name="geographical_risk", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of the risks of geographical factors connected to the company?", include_reasoning=True),
+            FieldDefinition(name="product_risk_assessment", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of the risks of the products and services they offer to their customers?", include_reasoning=True),
         ]
     }
 
