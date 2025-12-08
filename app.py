@@ -331,7 +331,8 @@ if st.session_state.selected_template == "Ownership":
     if not needs_reload:
         # Check type
         for f in st.session_state.fields:
-            if f.name == "ownership_graph" and f.data_type != FieldType.OWNERSHIP_GRAPH:
+            # Use string comparison to avoid Enum identity issues across reloads
+            if f.name == "ownership_graph" and str(f.data_type) != FieldType.OWNERSHIP_GRAPH.value:
                 needs_reload = True
                 break
     
