@@ -144,11 +144,16 @@ To verify the changes yourself:
     -   Load a template. The "Save Changes" button should be disabled/hidden or show "Saved".
     -   Modify a field. The "Save Changes" button should become active.
     -   Save. The button should revert to "Saved".
-2.  **Button Visibility**: Check that buttons have white text on a visible background in their default state.
-3.  **Description Field**: Verify that the description input is now a taller text area, making it easier to write detailed prompts.
-4.  **Reasoning V2**:
-    -   Run extraction.
-    -   Verify that the reasoning does *not* cite "professional formatting" as a reason for human authorship.
+### Final Polish Verification (v4.4)
+1.  **Button Visibility**:
+    -   Verify that "Save Changes" and "Delete" buttons have black text on a readable background in their default state.
+    -   Verify that hovering over them maintains readability (black text).
+    -   Verify that they look consistent with "Add Field" and "Remove Field".
+2.  **Custom Field Reasoning**:
+    -   Add a new field using the "Add New Field" form.
+    -   Check "Include Reasoning".
+    -   Verify that the new field appears in "Active Fields" with the "Include Reasoning" checkbox checked.
+    -   Run extraction and verify the output includes reasoning for this custom field.
 
 ## 5. Using Spektr
 

@@ -96,8 +96,8 @@ st.markdown("""
     
     /* Buttons - Liquid & Readable */
     .stButton>button, .stDownloadButton>button {
-        background: rgba(255, 255, 255, 0.2);
-        color: #ffffff !important; /* White text */
+        background: rgba(255, 255, 255, 0.25);
+        color: #000000 !important; /* Black text for better visibility */
         border: 1px solid rgba(255, 255, 255, 0.4);
         border-radius: 12px;
         height: 45px;
@@ -105,14 +105,13 @@ st.markdown("""
         backdrop-filter: blur(10px);
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2); /* Add shadow to make white text pop on light backgrounds */
     }
     .stButton>button:hover, .stDownloadButton>button:hover {
         background: rgba(255, 255, 255, 0.4);
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         border-color: rgba(255, 255, 255, 0.6);
-        color: #ffffff !important;
+        color: #000000 !important;
     }
     /* Primary Button */
     .stButton>button[kind="primary"] {
