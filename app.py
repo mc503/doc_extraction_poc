@@ -276,21 +276,23 @@ common_fields_inject = [
     FieldDefinition(name="document_date", data_type=FieldType.STRING, description="Creation date. Look for 'Date:', 'Issued:', or the main document date. Format strictly 'ddmmyyyy'.", length=FieldLength.SHORT),
 ]
 
-st.session_state.templates["Ownership"] = common_fields_inject + [
-    FieldDefinition(
-        name="ownership_graph", 
-        data_type=FieldType.OWNERSHIP_GRAPH, 
-        description=(
-            "Extract the ownership structure as a graph. "
-            "1. Identify every distinct Entity (Person or Company). "
-            "2. Assign a temporary unique ID to each entity (e.g., '1', '2'). "
-            "3. For every entity, list who they own (children) in the 'adj' list using these IDs. "
-            "4. Fill 'details' with visible text (names, types, percentages). "
-            "5. Output a JSON Array of objects where each object represents one entity."
-        ), 
-        length=FieldLength.LONG
-    )
-]
+    st.session_state.templates["Ownership"] = common_fields_inject + [
+        FieldDefinition(
+            name="ownership_graph", 
+            data_type=FieldType.OWNERSHIP_GRAPH, 
+            description=(
+                "Extract the ownership structure as a graph. "
+                "CRITICAL: Create a SEPARATE node object for EACH distinct entity (Person or Company) found in the chart. "
+                "Do NOT merge a company and its owner into the same object. "
+                "1. Identify every distinct box or name. "
+                "2. Assign a unique ID to each. "
+                "3. Define relationships in 'adj': if A owns B, put B's ID in A's adjacency list. "
+                "4. 'details' must ONLY contain info specific to that single entity. "
+                "5. Output a flat JSON Array of these node objects."
+            ), 
+            length=FieldLength.LONG
+        )
+    ]
 
 if 'selected_template' not in st.session_state:
     st.session_state.selected_template = "AML"

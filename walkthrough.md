@@ -167,7 +167,10 @@ To verify the changes yourself:
     -   Run extraction.
     -   Verify the output JSON is an array of objects.
     -   Verify each object has an `id` and `details`.
-    -   **Check Details**: Verify that `details` contains rich information if available in the document (e.g., `company_name`, `company_number`, `company_full_address`, `beneficial_owners`, etc.), matching the expanded schema.
+    -   **Check Details**: Verify that `details` contains rich information if available.
+    -   **Verify Types**: Ensure `type` is strictly "company" or "individual".
+    -   **Verify Roles**: Ensure `role` (in shareholding) uses standard terms like "UBO", "BO", "Shareholder".
+    -   **Check Separation**: Verify that owners (e.g., "Morten Groven") and their companies (e.g., "Njord Ventures") are extracted as **separate** nodes with their own IDs, linked via `adj`. They should NOT be merged into one object.
     -   Confirm the graph structure correctly links entities via IDs in `adj`.
 
 ## 5. Using Spektr

@@ -1,6 +1,6 @@
 import os
 import base64
-from typing import List, Dict, Any, Type, Optional
+from typing import List, Dict, Any, Type, Optional, Literal
 from enum import Enum
 import json
 
@@ -53,7 +53,7 @@ class FieldDefinition(BaseModel):
 # --- Ownership Models ---
 class OwnershipShareholding(BaseModel):
     percentage: Optional[str] = None
-    role: Optional[str] = None
+    role: Optional[str] = Field(None, description="Role of the entity, e.g., 'UBO', 'BO', 'Shareholder', 'Director'.")
 
 class OwnershipAdjacency(BaseModel):
     id: Optional[str] = None
@@ -67,7 +67,7 @@ class OwnershipAdjacency(BaseModel):
 
 class OwnershipDetails(BaseModel):
     name: Optional[str] = None
-    type: Optional[str] = None # company OR individual
+    type: Optional[Literal["company", "individual"]] = None # Enforce company or individual
     ownership_percentage: Optional[float] = None
     company_name: Optional[str] = None
     company_full_address: Optional[str] = None
