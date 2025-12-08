@@ -35,6 +35,7 @@ class FieldType(str, Enum):
     INTEGER = "Integer"
     LIST_STRINGS = "List of Strings"
     BOOLEAN = "Boolean"
+    OWNERSHIP_GRAPH = "Ownership Graph"
 
 class FieldLength(str, Enum):
     AUTO = "Auto"
@@ -48,6 +49,32 @@ class FieldDefinition(BaseModel):
     data_type: FieldType
     length: FieldLength = FieldLength.AUTO
     include_reasoning: bool = False
+
+# --- Ownership Models ---
+class OwnershipShareholding(BaseModel):
+    role: str
+    percentage: str
+
+class OwnershipAdjacency(BaseModel):
+    spektrId: str
+    directOrIndirect: str
+    shareholding: OwnershipShareholding
+    entityPositions: List[str]
+    entityRoles: List[str]
+
+class OwnershipDetails(BaseModel):
+    name: str
+    customer_type: str # company/individual
+    ownership: float
+    isBeneficiary: bool
+    company_name: Optional[str] = None
+    full_name: Optional[str] = None
+
+class OwnershipNode(BaseModel):
+    spektrId: str
+    status: str = "pending"
+    details: OwnershipDetails
+    adj: List[OwnershipAdjacency]
 
 class DynamicSchemaGenerator:
     @staticmethod
@@ -66,6 +93,8 @@ class DynamicSchemaGenerator:
                 base_type = List[str]
             elif field.data_type == FieldType.BOOLEAN:
                 base_type = bool
+            elif field.data_type == FieldType.OWNERSHIP_GRAPH:
+                base_type = List[OwnershipNode]
             else:
                 base_type = str # Default
             
@@ -74,7 +103,7 @@ class DynamicSchemaGenerator:
             if field.length != FieldLength.AUTO:
                 description += f" [Output Length: {field.length.value}]"
 
-            if field.include_reasoning:
+            if field.include_reasoning and field.data_type != FieldType.OWNERSHIP_GRAPH:
                 # Create a nested model for this field
                 nested_model_name = f"{field.name.capitalize()}WithReasoning"
                 nested_fields = {
@@ -87,7 +116,7 @@ class DynamicSchemaGenerator:
                     Field(description=description)
                 )
             else:
-                # Standard field
+                # Standard field (or complex graph which handles its own structure)
                 field_definitions[field.name] = (
                     base_type, 
                     Field(description=description)

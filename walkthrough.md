@@ -160,6 +160,11 @@ To verify the changes yourself:
 4.  **New Templates**:
     -   **AML**: Verify it now includes fields like "roles_responsibilities", "risk_appetite", etc.
     -   **BRA**: Verify there is a new "BRA" template in the dropdown, containing the common fields plus "customer_risk_assessment", "geographical_risk", etc.
+5.  **Ownership Analysis**:
+    -   Select the "Ownership" template.
+    -   Upload an ownership chart (e.g., an image of a corporate structure).
+    -   Run extraction.
+    -   Verify the output JSON contains a list of nodes with `spektrId`, `details`, and `adj` (adjacency list) representing the graph structure.
 
 ## 5. Using Spektr
 

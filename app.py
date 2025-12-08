@@ -254,8 +254,37 @@ if 'templates' not in st.session_state:
             FieldDefinition(name="distribution_channel_risk", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of a risks of its distribution channels or similar?", include_reasoning=True),
             FieldDefinition(name="geographical_risk", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of the risks of geographical factors connected to the company?", include_reasoning=True),
             FieldDefinition(name="product_risk_assessment", data_type=FieldType.BOOLEAN, description="Is there any chapter or mention of the risks of the products and services they offer to their customers?", include_reasoning=True),
+        ],
+        "Ownership": common_fields + [
+            FieldDefinition(
+                name="ownership_graph", 
+                data_type=FieldType.OWNERSHIP_GRAPH, 
+                description="Extract the full ownership structure. Identify the root company and all related entities (shareholders, UBOs, subsidiaries). For each node, provide details (name, type, ownership %) and adjacency list (adj) linking to other nodes with shareholding info. Follow the strict JSON structure for nodes and edges.", 
+                length=FieldLength.LONG
+            )
         ]
     }
+
+# Inject Ownership template if missing (for existing sessions)
+if "Ownership" not in st.session_state.templates:
+    # Re-define common fields here if needed, or just grab from AML if available
+    # But safer to just reconstruct the list to avoid reference issues
+    common_fields_inject = [
+        FieldDefinition(name="is_ai_generated", data_type=FieldType.BOOLEAN, description="Is this document AI-generated? Look for lack of specific details, generic fillers, or 'perfect' but empty language. Do NOT assume human authorship just because it looks professional.", length=FieldLength.SHORT, include_reasoning=True),
+        FieldDefinition(name="review_cycle", data_type=FieldType.STRING, description="Review cycle. STRICTLY normalize to: 'Yearly', 'Quarterly', 'Monthly'. Do NOT output 'annually' or 'every month'.", length=FieldLength.SHORT),
+        FieldDefinition(name="prepared_by", data_type=FieldType.STRING, description="Author/Owner/Department. If multiple, list the most relevant ones (up to 15 words).", length=FieldLength.MEDIUM),
+        FieldDefinition(name="company_name", data_type=FieldType.STRING, description="Company name this document is about.", length=FieldLength.SHORT),
+        FieldDefinition(name="document_date", data_type=FieldType.STRING, description="Creation date. Look for 'Date:', 'Issued:', or the main document date. Format strictly 'ddmmyyyy'.", length=FieldLength.SHORT),
+    ]
+    
+    st.session_state.templates["Ownership"] = common_fields_inject + [
+        FieldDefinition(
+            name="ownership_graph", 
+            data_type=FieldType.OWNERSHIP_GRAPH, 
+            description="Extract the full ownership structure. Identify the root company and all related entities (shareholders, UBOs, subsidiaries). For each node, provide details (name, type, ownership %) and adjacency list (adj) linking to other nodes with shareholding info. Follow the strict JSON structure for nodes and edges.", 
+            length=FieldLength.LONG
+        )
+    ]
 
 if 'selected_template' not in st.session_state:
     st.session_state.selected_template = "AML"
