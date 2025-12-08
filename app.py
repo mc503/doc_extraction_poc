@@ -334,12 +334,14 @@ if st.session_state.selected_template == "Ownership":
             # Use .value if available (Enum), else use string directly
             current_val = f.data_type.value if hasattr(f.data_type, 'value') else str(f.data_type)
             if f.name == "ownership_graph" and current_val != FieldType.OWNERSHIP_GRAPH.value:
+                print(f"DEBUG: Mismatch found! Field: {f.name}, val: {current_val}, expected: {FieldType.OWNERSHIP_GRAPH.value}")
                 needs_reload = True
                 break
     
     if needs_reload:
         st.session_state.fields = list(st.session_state.templates["Ownership"])
         st.session_state.original_template_fields = list(st.session_state.templates["Ownership"])
+        print("DEBUG: Triggering RERUN due to ownership mismatch")
         st.rerun()
 
 def load_template():
@@ -500,9 +502,10 @@ with st.sidebar:
 st.title("Spektr")
 st.markdown("### Upload & Extract")
 
-uploaded_file = st.file_uploader("Drop your document here", type=['png', 'jpg', 'jpeg', 'pdf'])
+uploaded_file = st.file_uploader("Drop your document here", type=['png', 'jpg', 'jpeg', 'pdf'], key="main_file_uploader")
 
 if uploaded_file:
+    print(f"DEBUG: File uploaded: {uploaded_file.name}")
     col1, col2 = st.columns(2)
     
     # Display Document
