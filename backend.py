@@ -56,7 +56,7 @@ class EntityDetails(BaseModel):
     """Core details for an entity in the ownership structure."""
     name: str = Field(description="Full name of entity (company name or individual's full name)")
     type: Literal["company", "individual"] = Field(description="Must be exactly 'company' or 'individual'")
-    registration_number: Optional[str] = Field(None, description="Company registration/ID number if available")
+    company_number: Optional[str] = Field(None, description="Company registration/ID number if available")
     country: Optional[str] = Field(None, description="Country code (e.g., 'DK', 'UK', 'MT')")
     address: Optional[str] = Field(None, description="Full address if available")
 

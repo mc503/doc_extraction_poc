@@ -74,10 +74,10 @@ OWNERSHIP_STRUCTURE_INSTRUCTIONS = """
 Extract the complete ownership structure from the document.
 
 STEP-BY-STEP PROCESS:
-1. IDENTIFY the main/subject company (usually at bottom or center of ownership graph)
+1. IDENTIFY the main/subject company - this is the company being OWNED, at the END of the ownership chain (the subsidiary, not the parent). In org charts, this is typically at the BOTTOM.
 2. ASSIGN a unique temp_id to each entity (e.g., "entity_1", "entity_2", etc.)
 3. PROCESS level by level:
-   - Level 0: The main company
+   - Level 0: The main company (the company being owned/subject of the document)
    - Level 1: Direct owners of main company
    - Level 2: Owners of Level 1 entities
    - Continue upward through the structure
@@ -86,7 +86,7 @@ EXTRACTION RULES:
 - "type" MUST be exactly "company" or "individual" - NEVER use "person", "human", etc.
 - ONLY extract information EXPLICITLY shown in the document
 - NEVER fabricate or assume data not present
-- Extract registration numbers, country codes, and addresses when visible
+- Extract company numbers, country codes, and addresses when visible
 - For ownership percentages, use the exact values shown (e.g., 20.97, 17.43, 100)
 - Capture both direct and indirect ownership if indicated
 
@@ -95,7 +95,7 @@ RELATIONSHIP TYPES:
 
 OUTPUT FORMAT:
 Return a structured JSON with:
-- main_company_id: temp_id of the subject company
+- main_company_id: temp_id of the subject company (the one being OWNED, at the END of the chain)
 - entities: Array of all entities with their details and level
 - relationships: Array of all relationships between entities
 """
@@ -104,10 +104,10 @@ OWNERSHIP_STRUCTURE_INSTRUCTIONS_WITH_NON_EQUITY = """
 Extract the complete ownership structure from the document.
 
 STEP-BY-STEP PROCESS:
-1. IDENTIFY the main/subject company (usually at bottom or center of ownership graph)
+1. IDENTIFY the main/subject company - this is the company being OWNED, at the END of the ownership chain (the subsidiary, not the parent). In org charts, this is typically at the BOTTOM.
 2. ASSIGN a unique temp_id to each entity (e.g., "entity_1", "entity_2", etc.)
 3. PROCESS level by level:
-   - Level 0: The main company
+   - Level 0: The main company (the company being owned/subject of the document)
    - Level 1: Direct owners of main company
    - Level 2: Owners of Level 1 entities
    - Continue upward through the structure
@@ -116,7 +116,7 @@ EXTRACTION RULES:
 - "type" MUST be exactly "company" or "individual" - NEVER use "person", "human", etc.
 - ONLY extract information EXPLICITLY shown in the document
 - NEVER fabricate or assume data not present
-- Extract registration numbers, country codes, and addresses when visible
+- Extract company numbers, country codes, and addresses when visible
 - For ownership percentages, use the exact values shown (e.g., 20.97, 17.43, 100)
 - Capture both direct and indirect ownership if indicated
 
@@ -129,7 +129,7 @@ RELATIONSHIP TYPES (include ALL that apply):
 
 OUTPUT FORMAT:
 Return a structured JSON with:
-- main_company_id: temp_id of the subject company
+- main_company_id: temp_id of the subject company (the one being OWNED, at the END of the chain)
 - entities: Array of all entities with their details and level
 - relationships: Array of all relationships between entities
 """

@@ -167,11 +167,9 @@ with st.sidebar:
                 
                 new_name = st.text_input("Name", value=field.name, key=f"edit_name_{i}")
                 
-                # For ownership structure fields, show read-only description
+                # For ownership structure fields, hide AI instructions completely
                 if is_ownership_field:
-                    st.caption("AI Instructions (built-in):")
-                    st.code(field.description[:200] + "..." if len(field.description) > 200 else field.description, language=None)
-                    new_desc = field.description  # Keep existing
+                    new_desc = field.description  # Keep existing (hidden from user)
                 else:
                     new_desc = st.text_area("Description", value=field.description, key=f"edit_desc_{i}", height=100)
                 
@@ -183,9 +181,14 @@ with st.sidebar:
                     new_type_str = st.selectbox("Type", type_opts, index=curr_type_idx, key=f"edit_type_{i}")
                     
                 with col_e2:
-                    len_opts = [l.value for l in FieldLength]
-                    curr_len_idx = len_opts.index(field.length.value)
-                    new_len_str = st.selectbox("Length", len_opts, index=curr_len_idx, key=f"edit_len_{i}")
+                    # Hide length selector for ownership structure fields
+                    if is_ownership_field:
+                        new_len_str = FieldLength.LONG.value  # Fixed to LONG
+                        st.caption("Length: Fixed (Ownership Structure)")
+                    else:
+                        len_opts = [l.value for l in FieldLength]
+                        curr_len_idx = len_opts.index(field.length.value)
+                        new_len_str = st.selectbox("Length", len_opts, index=curr_len_idx, key=f"edit_len_{i}")
 
                 # Show different options based on field type
                 if is_ownership_field:
