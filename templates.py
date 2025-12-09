@@ -75,29 +75,33 @@ Extract the complete ownership structure from the document.
 
 STEP-BY-STEP PROCESS:
 1. IDENTIFY the main/subject company - this is the company being OWNED, at the END of the ownership chain (the subsidiary, not the parent). In org charts, this is typically at the BOTTOM.
-2. ASSIGN a unique temp_id to each entity (e.g., "entity_1", "entity_2", etc.)
-3. PROCESS level by level:
-   - Level 0: The main company (the company being owned/subject of the document)
-   - Level 1: Direct owners of main company
-   - Level 2: Owners of Level 1 entities
-   - Continue upward through the structure
+   - Assign this main company "Level 0".
+2. IDENTIFY direct shareholders/owners of the main company.
+   - Assign these "Level 1".
+3. IDENTIFY owners of the Level 1 entities.
+   - Assign these "Level 2".
+4. Continue upward until you reach the Ultimate Beneficial Owners (UBOs) or top-level parent companies.
+5. ASSIGN a unique temp_id to each entity (e.g., "entity_1", "entity_2").
 
 EXTRACTION RULES:
-- "type" MUST be exactly "company" or "individual" - NEVER use "person", "human", etc.
-- ONLY extract information EXPLICITLY shown in the document
-- NEVER fabricate or assume data not present
-- Extract company numbers, country codes, and addresses when visible
-- For ownership percentages, use the exact values shown (e.g., 20.97, 17.43, 100)
-- Capture both direct and indirect ownership if indicated
+- "type" MUST be exactly "company" or "individual".
+- ONLY extract information EXPLICITLY shown.
+- Extract company numbers (registration IDs), country codes, and addresses when visible.
+- For ownership percentages, use exact values (e.g., 20.97).
+- "main_company_id" MUST be the temp_id of the Level 0 subject company.
+
+RELATIONSHIP DIRECTION:
+- Relationships go FROM the owner TO the owned entity.
+- Example: If Company A owns Company B, relation is A -> B.
 
 RELATIONSHIP TYPES:
-- "ownership": Entity holds shares/ownership stake (always include these)
+- "ownership": Entity holds shares/stake.
 
 OUTPUT FORMAT:
 Return a structured JSON with:
-- main_company_id: temp_id of the subject company (the one being OWNED, at the END of the chain)
-- entities: Array of all entities with their details and level
-- relationships: Array of all relationships between entities
+- main_company_id: temp_id of the subject company (Level 0)
+- entities: Array of all entities with details and level
+- relationships: Array of all relationships
 """
 
 OWNERSHIP_STRUCTURE_INSTRUCTIONS_WITH_NON_EQUITY = """
@@ -105,23 +109,27 @@ Extract the complete ownership structure from the document.
 
 STEP-BY-STEP PROCESS:
 1. IDENTIFY the main/subject company - this is the company being OWNED, at the END of the ownership chain (the subsidiary, not the parent). In org charts, this is typically at the BOTTOM.
-2. ASSIGN a unique temp_id to each entity (e.g., "entity_1", "entity_2", etc.)
-3. PROCESS level by level:
-   - Level 0: The main company (the company being owned/subject of the document)
-   - Level 1: Direct owners of main company
-   - Level 2: Owners of Level 1 entities
-   - Continue upward through the structure
+   - Assign this main company "Level 0".
+2. IDENTIFY direct shareholders/owners of the main company.
+   - Assign these "Level 1".
+3. IDENTIFY owners of the Level 1 entities.
+   - Assign these "Level 2".
+4. Continue upward until you reach the Ultimate Beneficial Owners (UBOs) or top-level parent companies.
+5. ASSIGN a unique temp_id to each entity (e.g., "entity_1", "entity_2").
 
 EXTRACTION RULES:
-- "type" MUST be exactly "company" or "individual" - NEVER use "person", "human", etc.
-- ONLY extract information EXPLICITLY shown in the document
-- NEVER fabricate or assume data not present
-- Extract company numbers, country codes, and addresses when visible
-- For ownership percentages, use the exact values shown (e.g., 20.97, 17.43, 100)
-- Capture both direct and indirect ownership if indicated
+- "type" MUST be exactly "company" or "individual".
+- ONLY extract information EXPLICITLY shown.
+- Extract company numbers (registration IDs), country codes, and addresses when visible.
+- For ownership percentages, use exact values (e.g., 20.97).
+- "main_company_id" MUST be the temp_id of the Level 0 subject company.
+
+RELATIONSHIP DIRECTION:
+- Relationships go FROM the owner TO the owned entity.
+- Example: If Company A owns Company B, relation is A -> B.
 
 RELATIONSHIP TYPES (include ALL that apply):
-- "ownership": Entity holds shares/ownership stake
+- "ownership": Entity holds shares/stake
 - "director": Entity is a director
 - "auditor": Entity is an auditor
 - "secretary": Entity is a company secretary
@@ -129,9 +137,9 @@ RELATIONSHIP TYPES (include ALL that apply):
 
 OUTPUT FORMAT:
 Return a structured JSON with:
-- main_company_id: temp_id of the subject company (the one being OWNED, at the END of the chain)
-- entities: Array of all entities with their details and level
-- relationships: Array of all relationships between entities
+- main_company_id: temp_id of the subject company (Level 0)
+- entities: Array of all entities with details and level
+- relationships: Array of all relationships
 """
 
 OWNERSHIP_FIELDS = COMMON_FIELDS + [

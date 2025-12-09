@@ -154,6 +154,11 @@ with st.sidebar:
         st.button("Add Field", on_click=add_field)
 
     st.divider()
+    if st.button("⚠️ Hard Reset App", type="primary", use_container_width=True):
+        st.session_state.clear()
+        st.rerun()
+
+    st.divider()
     st.subheader("Active Fields")
     
     if not st.session_state.fields:
@@ -175,13 +180,17 @@ with st.sidebar:
                 
                 col_e1, col_e2 = st.columns(2)
                 with col_e1:
-                    # Find index of current value in Enum
-                    type_opts = [t.value for t in FieldType]
-                    curr_type_idx = type_opts.index(field.data_type.value)
-                    new_type_str = st.selectbox("Type", type_opts, index=curr_type_idx, key=f"edit_type_{i}")
+                    # Type column
+                    if is_ownership_field:
+                        st.caption("Type: Fixed (Ownership Structure)")
+                        new_type_str = field.data_type.value
+                    else:
+                        type_opts = [t.value for t in FieldType]
+                        curr_type_idx = type_opts.index(field.data_type.value)
+                        new_type_str = st.selectbox("Type", type_opts, index=curr_type_idx, key=f"edit_type_{i}")
                     
                 with col_e2:
-                    # Hide length selector for ownership structure fields
+                    # Length column
                     if is_ownership_field:
                         new_len_str = FieldLength.LONG.value  # Fixed to LONG
                         st.caption("Length: Fixed (Ownership Structure)")
