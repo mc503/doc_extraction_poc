@@ -70,25 +70,77 @@ BRA_FIELDS = COMMON_FIELDS + [
 
 
 # Ownership Template Fields
-OWNERSHIP_GRAPH_DESCRIPTION = (
-    "Extract the ownership structure as a graph. "
-    "CRITICAL: Create a SEPARATE node object for EACH distinct entity (Person or Company) found in the chart. "
-    "Do NOT merge a company and its owner into the same object. "
-    "1. Identify every distinct box or name. "
-    "2. Assign a unique ID to each. "
-    "3. Define relationships in 'adj': if A owns B, put B's ID in A's adjacency list. "
-    "4. IMPORTANT: If a person is labeled as 'UBO', 'Director', etc., include this in 'entityRoles' within the adjacency object linking to them. "
-    "5. 'details' must ONLY contain info specific to that single entity. "
-    "6. STRICTLY normalize 'type' in details to 'company' or 'individual'. Never use 'human', 'person', etc."
-    "7. Output a flat JSON Array of these node objects."
-)
+OWNERSHIP_STRUCTURE_INSTRUCTIONS = """
+Extract the complete ownership structure from the document.
+
+STEP-BY-STEP PROCESS:
+1. IDENTIFY the main/subject company (usually at bottom or center of ownership graph)
+2. ASSIGN a unique temp_id to each entity (e.g., "entity_1", "entity_2", etc.)
+3. PROCESS level by level:
+   - Level 0: The main company
+   - Level 1: Direct owners of main company
+   - Level 2: Owners of Level 1 entities
+   - Continue upward through the structure
+
+EXTRACTION RULES:
+- "type" MUST be exactly "company" or "individual" - NEVER use "person", "human", etc.
+- ONLY extract information EXPLICITLY shown in the document
+- NEVER fabricate or assume data not present
+- Extract registration numbers, country codes, and addresses when visible
+- For ownership percentages, use the exact values shown (e.g., 20.97, 17.43, 100)
+- Capture both direct and indirect ownership if indicated
+
+RELATIONSHIP TYPES:
+- "ownership": Entity holds shares/ownership stake (always include these)
+
+OUTPUT FORMAT:
+Return a structured JSON with:
+- main_company_id: temp_id of the subject company
+- entities: Array of all entities with their details and level
+- relationships: Array of all relationships between entities
+"""
+
+OWNERSHIP_STRUCTURE_INSTRUCTIONS_WITH_NON_EQUITY = """
+Extract the complete ownership structure from the document.
+
+STEP-BY-STEP PROCESS:
+1. IDENTIFY the main/subject company (usually at bottom or center of ownership graph)
+2. ASSIGN a unique temp_id to each entity (e.g., "entity_1", "entity_2", etc.)
+3. PROCESS level by level:
+   - Level 0: The main company
+   - Level 1: Direct owners of main company
+   - Level 2: Owners of Level 1 entities
+   - Continue upward through the structure
+
+EXTRACTION RULES:
+- "type" MUST be exactly "company" or "individual" - NEVER use "person", "human", etc.
+- ONLY extract information EXPLICITLY shown in the document
+- NEVER fabricate or assume data not present
+- Extract registration numbers, country codes, and addresses when visible
+- For ownership percentages, use the exact values shown (e.g., 20.97, 17.43, 100)
+- Capture both direct and indirect ownership if indicated
+
+RELATIONSHIP TYPES (include ALL that apply):
+- "ownership": Entity holds shares/ownership stake
+- "director": Entity is a director
+- "auditor": Entity is an auditor
+- "secretary": Entity is a company secretary
+- "other": Other non-equity roles
+
+OUTPUT FORMAT:
+Return a structured JSON with:
+- main_company_id: temp_id of the subject company
+- entities: Array of all entities with their details and level
+- relationships: Array of all relationships between entities
+"""
 
 OWNERSHIP_FIELDS = COMMON_FIELDS + [
     FieldDefinition(
-        name="ownership_graph", 
-        data_type=FieldType.OWNERSHIP_GRAPH, 
-        description=OWNERSHIP_GRAPH_DESCRIPTION, 
-        length=FieldLength.LONG
+        name="ownership_structure",
+        data_type=FieldType.OWNERSHIP_STRUCTURE,
+        description=OWNERSHIP_STRUCTURE_INSTRUCTIONS,
+        length=FieldLength.LONG,
+        include_non_equity_roles=False
     )
 ]
 

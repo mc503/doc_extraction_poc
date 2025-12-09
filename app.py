@@ -6,7 +6,7 @@ from pathlib import Path
 import pypdfium2 as pdfium
 
 from backend import DocumentProcessor, FieldDefinition, FieldType, FieldLength
-from templates import get_default_templates, OWNERSHIP_FIELDS
+from templates import get_default_templates, OWNERSHIP_STRUCTURE_INSTRUCTIONS, OWNERSHIP_STRUCTURE_INSTRUCTIONS_WITH_NON_EQUITY
 
 # Page Config
 st.set_page_config(
@@ -27,14 +27,28 @@ def load_css():
 # Apply CSS
 load_css()
 
+# Handle URL-based session reset (add ?reset=1 to URL to clear session state)
+query_params = st.query_params
+if query_params.get("reset") == "1":
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
+    st.query_params.clear()
+    st.rerun()
+
 
 # Initialize Session State with Templates
 if 'templates' not in st.session_state:
     st.session_state.templates = get_default_templates()
 
-# Ensure Ownership template is always up-to-date
-# (handles stale session state from previous versions)
-st.session_state.templates["Ownership"] = list(OWNERSHIP_FIELDS)
+# Migration check: Ensure Ownership template uses new ownership_structure field
+# (handles stale session state from previous app versions)
+if 'Ownership' in st.session_state.templates:
+    ownership_template = st.session_state.templates['Ownership']
+    ownership_field_names = [f.name for f in ownership_template]
+    if 'ownership_graph' in ownership_field_names or 'ownership_structure' not in ownership_field_names:
+        # Migrate to new schema by refreshing templates
+        fresh_templates = get_default_templates()
+        st.session_state.templates['Ownership'] = fresh_templates['Ownership']
 
 if 'selected_template' not in st.session_state:
     st.session_state.selected_template = "AML"
@@ -50,21 +64,10 @@ if 'original_template_fields' not in st.session_state:
 if 'extraction_result' not in st.session_state:
     st.session_state.extraction_result = None
 
-# Force reload fields if we are on Ownership template but the fields don't match the new definition
+# If currently viewing Ownership template with stale fields, refresh them
 if st.session_state.selected_template == "Ownership":
     current_field_names = [f.name for f in st.session_state.fields]
-    needs_reload = "ownership_graph" not in current_field_names
-    
-    if not needs_reload:
-        # Check if ownership_graph field has correct type using generator
-        ownership_field = next(
-            (f for f in st.session_state.fields if f.name == "ownership_graph"), 
-            None
-        )
-        if ownership_field and ownership_field.data_type != FieldType.OWNERSHIP_GRAPH:
-            needs_reload = True
-    
-    if needs_reload:
+    if 'ownership_graph' in current_field_names or 'ownership_structure' not in current_field_names:
         st.session_state.fields = list(st.session_state.templates["Ownership"])
         st.session_state.original_template_fields = list(st.session_state.templates["Ownership"])
 
@@ -74,8 +77,8 @@ def load_template():
     template_name = st.session_state.template_selector
     st.session_state.selected_template = template_name
     st.session_state.fields = list(st.session_state.templates[template_name])
-    # Update original state
     st.session_state.original_template_fields = list(st.session_state.templates[template_name])
+
 
 
 def add_field():
@@ -160,8 +163,17 @@ with st.sidebar:
         for i, field in enumerate(st.session_state.fields):
             # Use Expander for editing
             with st.expander(f"{field.name} ({field.data_type.value})", expanded=False):
+                is_ownership_field = field.data_type == FieldType.OWNERSHIP_STRUCTURE
+                
                 new_name = st.text_input("Name", value=field.name, key=f"edit_name_{i}")
-                new_desc = st.text_area("Description", value=field.description, key=f"edit_desc_{i}", height=100)
+                
+                # For ownership structure fields, show read-only description
+                if is_ownership_field:
+                    st.caption("AI Instructions (built-in):")
+                    st.code(field.description[:200] + "..." if len(field.description) > 200 else field.description, language=None)
+                    new_desc = field.description  # Keep existing
+                else:
+                    new_desc = st.text_area("Description", value=field.description, key=f"edit_desc_{i}", height=100)
                 
                 col_e1, col_e2 = st.columns(2)
                 with col_e1:
@@ -175,7 +187,23 @@ with st.sidebar:
                     curr_len_idx = len_opts.index(field.length.value)
                     new_len_str = st.selectbox("Length", len_opts, index=curr_len_idx, key=f"edit_len_{i}")
 
-                new_reasoning = st.checkbox("Include Reasoning", value=field.include_reasoning, key=f"edit_reason_{i}")
+                # Show different options based on field type
+                if is_ownership_field:
+                    new_non_equity = st.checkbox(
+                        "Include Non-Equity Roles", 
+                        value=field.include_non_equity_roles, 
+                        key=f"edit_non_equity_{i}",
+                        help="Extract directors, auditors, secretaries in addition to ownership relationships"
+                    )
+                    new_reasoning = False  # Not applicable
+                    # Update description based on checkbox
+                    if new_non_equity:
+                        new_desc = OWNERSHIP_STRUCTURE_INSTRUCTIONS_WITH_NON_EQUITY
+                    else:
+                        new_desc = OWNERSHIP_STRUCTURE_INSTRUCTIONS
+                else:
+                    new_non_equity = False  # Not applicable
+                    new_reasoning = st.checkbox("Include Reasoning", value=field.include_reasoning, key=f"edit_reason_{i}")
 
                 # Update the field object in session state if changed
                 updated_field = FieldDefinition(
@@ -183,7 +211,8 @@ with st.sidebar:
                     description=new_desc,
                     data_type=FieldType(new_type_str),
                     length=FieldLength(new_len_str),
-                    include_reasoning=new_reasoning
+                    include_reasoning=new_reasoning,
+                    include_non_equity_roles=new_non_equity
                 )
                 st.session_state.fields[i] = updated_field
 
