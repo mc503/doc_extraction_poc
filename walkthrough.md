@@ -175,6 +175,12 @@ To verify the changes yourself:
     -   **Verify Compactness**: Ensure the output JSON does NOT contain fields with `null` values. It should only show fields that were actually extracted.
     -   Confirm the graph structure correctly links entities via IDs in `adj`.
 
+### API & Model Verification (v5.0)
+1.  **High Detail Extraction**:
+    -   Verify that the extraction backend now sends `"detail": "high"` for image processing.
+    -   Verify that the model being used is `gpt-5.2`.
+
+
 ## 5. Using Spektr
 
 1.  **Upload a Document**: Drag and drop a PDF or Image (PNG/JPG) into the "Upload & Extract" area.

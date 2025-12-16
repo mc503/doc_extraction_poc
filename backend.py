@@ -57,14 +57,14 @@ class EntityDetails(BaseModel):
     name: str = Field(description="Full name of entity (company name or individual's full name)")
     type: Literal["company", "individual"] = Field(description="Must be exactly 'company' or 'individual'")
     company_number: Optional[str] = Field(None, description="Company registration/ID number if available")
-    country: Optional[str] = Field(None, description="Country code (e.g., 'DK', 'UK', 'MT')")
+    country: Optional[str] = Field(None, description="ISO 3166-1 alpha-2 country code (e.g., 'DK', 'UK', 'CW'). Normalize full names to codes.")
     address: Optional[str] = Field(None, description="Full address if available")
 
 class OwnershipRelationship(BaseModel):
     """Defines a relationship between two entities."""
     from_entity_id: str = Field(description="Temporary ID of the owning/related entity")
     to_entity_id: str = Field(description="Temporary ID of the owned/subject entity")
-    relationship_type: Literal["ownership", "director", "auditor", "secretary", "other"] = Field(description="Type of relationship")
+    relationship_type: Literal["ownership", "director", "auditor", "secretary", "ubo", "other"] = Field(description="Type of relationship")
     ownership_percentage: Optional[float] = Field(None, description="Ownership percentage if applicable (0-100)")
     is_direct: bool = Field(True, description="True if direct relationship, False if indirect")
     role_description: Optional[str] = Field(None, description="Additional role details if available")
@@ -164,13 +164,14 @@ class DocumentProcessor:
             content_list.append({
                 "type": "image_url",
                 "image_url": {
-                    "url": f"data:{media_type};base64,{base64_image}"
+                    "url": f"data:{media_type};base64,{base64_image}",
+                    "detail": "high"
                 }
             })
 
         # 3. Call OpenAI API
         response = self.client.beta.chat.completions.parse(
-            model="gpt-4o",
+            model="gpt-5.2",
             messages=[
                 {
                     "role": "system",

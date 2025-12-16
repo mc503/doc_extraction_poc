@@ -86,7 +86,8 @@ STEP-BY-STEP PROCESS:
 EXTRACTION RULES:
 - "type" MUST be exactly "company" or "individual".
 - ONLY extract information EXPLICITLY shown.
-- Extract company numbers (registration IDs), country codes, and addresses when visible.
+- Extract company numbers (registration IDs).
+- EXTRACT AND NORMALIZE COUNTRY CODES: Always use ISO 3166-1 alpha-2 codes (e.g., "Curacao" -> "CW", "Denmark" -> "DK").
 - For ownership percentages, use exact values (e.g., 20.97).
 - "main_company_id" MUST be the temp_id of the Level 0 subject company.
 
@@ -96,6 +97,7 @@ RELATIONSHIP DIRECTION:
 
 RELATIONSHIP TYPES:
 - "ownership": Entity holds shares/stake.
+- "ubo": Ultimate Beneficial Owner (if explicitly labeled).
 
 OUTPUT FORMAT:
 Return a structured JSON with:
@@ -120,7 +122,8 @@ STEP-BY-STEP PROCESS:
 EXTRACTION RULES:
 - "type" MUST be exactly "company" or "individual".
 - ONLY extract information EXPLICITLY shown.
-- Extract company numbers (registration IDs), country codes, and addresses when visible.
+- Extract company numbers (registration IDs).
+- EXTRACT AND NORMALIZE COUNTRY CODES: Always use ISO 3166-1 alpha-2 codes (e.g., "Curacao" -> "CW", "Denmark" -> "DK").
 - For ownership percentages, use exact values (e.g., 20.97).
 - "main_company_id" MUST be the temp_id of the Level 0 subject company.
 
@@ -130,6 +133,7 @@ RELATIONSHIP DIRECTION:
 
 RELATIONSHIP TYPES (include ALL that apply):
 - "ownership": Entity holds shares/stake
+- "ubo": Ultimate Beneficial Owner
 - "director": Entity is a director
 - "auditor": Entity is an auditor
 - "secretary": Entity is a company secretary
